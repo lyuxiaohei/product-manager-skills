@@ -1,0 +1,7 @@
+{
+  "executionMode": "full",
+  "outputDir": "$PWD",
+  "whisperModel": "base",
+  "language": "zh",
+  "createdAt": "2026-04-02"
+}
