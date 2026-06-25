@@ -1,6 +1,6 @@
 ---
 name: prompt-capture
-description: Install/remove a Claude Code hook that auto-captures every submitted prompt into a per-project .prompts folder (one markdown file per session, timestamped). v2 also filters noise (skips tiny/ACK prompts like "继续"), redacts common secrets (sk-, gh_, bearer, key=value, bigmodel-style tokens) before writing, and ships a build-library script that dedupes + ranks captured prompts into a curated library.md. Use when the user wants to auto-save/log prompts per-session, build a prompt journal or deduplicated prompt library, tune denoise/redaction, or install/uninstall the hook. Covers hook wiring in settings.json (global scope) and gitignoring the .prompts folder.
+description: Install/remove a Claude Code hook that auto-captures every submitted prompt into a per-project .prompts folder (one markdown file per session, timestamped). v2 filters noise (skips tiny/ACK prompts like "继续" and bare slash commands), redacts common secrets (sk-, gh_, bearer, key=value, bigmodel-style tokens) before writing, and ships a build-library script that fuzzy-dedupes (near-duplicate clustering) + auto-tags (PRD/建模/原型/调试/工具/协作) + ranks captured prompts into a categorized library.md. Use when the user wants to auto-save/log prompts per-session, build a prompt journal or deduplicated prompt library, tune denoise/redaction, or install/uninstall the hook. Covers hook wiring in settings.json (global scope) and gitignoring the .prompts folder.
 ---
 
 # Prompt Capture
@@ -29,26 +29,34 @@ Defaults are ON with sensible values. Override by creating
 `<project>/.prompts/config.json`:
 
 ```json
-{ "min_length": 3, "denoise": true, "redact": true,
-  "skip_words": ["继续","可以"], "extra_skip_words": ["再加一个"] }
+{ "min_length": 3, "denoise": true, "redact": true, "skip_slash_commands": true,
+  "skip_words": ["继续","可以"], "extra_skip_words": ["再加一个"],
+  "extra_redact_patterns": ["1[3-9][0-9]{9}", "内部代号\\d+"] }
 ```
 
 - `min_length` — skip prompts shorter than this (default 2).
+- `skip_slash_commands` — skip bare slash commands like `/help` (default true).
 - `skip_words` — **replaces** the built-in ACK denylist; `extra_skip_words` appends.
+- `extra_redact_patterns` — extra regex strings (applied `gi`) scrubbed to
+  `[REDACTED]` on top of the built-in secrets (phone/ID/internal codes).
+  Regex escapes need double-backslash in JSON (`\\d`, not `\d`).
 - `denoise` / `redact` — set to `false` to disable either stage.
 No config file = built-in defaults (works out of the box).
 
 ## Build a prompt library
 
-`assets/build-library.js` scans `.prompts/*.md`, dedupes prompts (normalized
-exact match), ranks by reuse frequency, writes `.prompts/library.md`:
+`assets/build-library.js` v2 scans `.prompts/*.md`, **fuzzy-clusters** near-dupes
+(Sørensen-Dice ≥ 0.35 on latin words + CJK bigrams — so reworded Chinese prompts
+group together), **auto-tags** each cluster by keyword
+(PRD / 建模 / 原型 / 调试 / 工具 / 协作), writes `.prompts/library.md` grouped by
+tag with reuse counts:
 
 ```bash
-node ~/.claude/hooks/build-library.js [project-dir]   # default project-dir = cwd
+node ~/.claude/hooks/build-library.js [project-dir] [--threshold 0.35]
 ```
 
-Output groups prompts into **⭐ Reused (≥2×)** and **Once**. Re-run anytime (file
-is overwritten). Hand-curated tagging/categories are the next layer on top.
+Lower threshold → merge more aggressively. Re-run anytime (file overwritten).
+Hand-curated tags/categories layer on top of this auto baseline.
 
 ## Install (global)
 

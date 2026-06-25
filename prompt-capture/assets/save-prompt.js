@@ -28,7 +28,8 @@ const DEFAULT_SKIP_WORDS = [
 ];
 
 function loadConfig(cwd) {
-  const cfg = { min_length: 2, denoise: true, redact: true, skip_words: DEFAULT_SKIP_WORDS };
+  const cfg = { min_length: 2, denoise: true, redact: true, skip_slash_commands: true,
+    skip_words: DEFAULT_SKIP_WORDS, extra_redact_patterns: [] };
   try {
     const f = path.join(cwd, '.prompts', 'config.json');
     if (fs.existsSync(f)) {
@@ -36,8 +37,10 @@ function loadConfig(cwd) {
       if (typeof c.min_length === 'number') cfg.min_length = c.min_length;
       if (typeof c.denoise === 'boolean') cfg.denoise = c.denoise;
       if (typeof c.redact === 'boolean') cfg.redact = c.redact;
+      if (typeof c.skip_slash_commands === 'boolean') cfg.skip_slash_commands = c.skip_slash_commands;
       if (Array.isArray(c.skip_words)) cfg.skip_words = c.skip_words;        // replaces defaults
       if (Array.isArray(c.extra_skip_words)) cfg.skip_words = cfg.skip_words.concat(c.extra_skip_words);
+      if (Array.isArray(c.extra_redact_patterns)) cfg.extra_redact_patterns = c.extra_redact_patterns;
     }
   } catch { /* bad config → use defaults */ }
   return cfg;
@@ -46,13 +49,14 @@ function loadConfig(cwd) {
 function isNoise(prompt, cfg) {
   const t = prompt.trim();
   if (t.length < cfg.min_length) return true;                        // too short
+  if (cfg.skip_slash_commands && /^\/[a-z][a-z0-9-]*$/i.test(t)) return true; // bare slash command ("/help")
   if (cfg.skip_words.some(w => w && w.trim().toLowerCase() === t.toLowerCase())) return true; // pure ACK
   return false;
 }
 
 // Scrub common secret patterns. Conservative: only well-known shapes, so it
 // won't mangle normal prose.
-function redact(s) {
+function redact(s, cfg) {
   s = s.replace(/sk-[A-Za-z0-9_-]{20,}/g, '[REDACTED:sk]');
   s = s.replace(/gh[opsu]_[A-Za-z0-9]{36,}/g, '[REDACTED:gh]');
   s = s.replace(/AKIA[0-9A-Z]{16}/g, '[REDACTED:aws]');
@@ -64,6 +68,12 @@ function redact(s) {
     /((?:api[_-]?key|access[_-]?token|auth[_-]?token|secret|passwd?|authorization))(["'\s]*[:=]\s*["']?)([^\s"';,}]{8,})/gi,
     '$1$2[REDACTED]'
   );
+  // user-supplied patterns (regex strings) from config.extra_redact_patterns
+  if (cfg && Array.isArray(cfg.extra_redact_patterns)) {
+    for (const p of cfg.extra_redact_patterns) {
+      try { s = s.replace(new RegExp(p, 'gi'), '[REDACTED]'); } catch { /* skip invalid regex */ }
+    }
+  }
   return s;
 }
 
@@ -90,7 +100,7 @@ process.stdin.on('end', () => {
 
     if (cfg.denoise && isNoise(prompt, cfg)) process.exit(0);   // DENOISE: skip
 
-    const clean = cfg.redact ? redact(prompt) : prompt;
+    const clean = cfg.redact ? redact(prompt, cfg) : prompt;
 
     const dir = path.join(cwd, '.prompts');
     fs.mkdirSync(dir, { recursive: true });
