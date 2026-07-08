@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // save-prompt.js — Claude Code `UserPromptSubmit` hook (v2: denoise + redact).
-// Captures submitted prompts to <project>/.prompts/<session_id>.md
+// Captures submitted prompts to <project>/.prompts/YYYYMMDD-<project>-<shortid>.md
 // (one file per session, markdown, timestamped entries).
+// Filename: date = first-prompt local date; project = cwd basename; shortid =
+// first 8 hex of session_id. Cross-day sessions append to the first-date file.
 //
 // v2 adds:
 //   - DENOISE: skip tiny / pure-ACK prompts ("继续", "ok", ...) so the log
@@ -83,6 +85,22 @@ function localTs(d) {
          `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
+function dateStamp(d) {
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}`;
+}
+
+// project name for the filename = cwd basename, sanitized for Windows/POSIX
+function sanitizeName(s) {
+  return (s || '')
+    .replace(/[\\/:*?"<>|]/g, '-')   // Windows-illegal chars
+    .replace(/[\x00-\x1f]/g, '')     // control chars
+    .replace(/[\s.]+$/g, '')         // trailing whitespace/dots (Win disallows)
+    .trim()
+    .slice(0, 40);
+}
+const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 let raw = '';
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', c => { raw += c; });
@@ -105,7 +123,20 @@ process.stdin.on('end', () => {
     const dir = path.join(cwd, '.prompts');
     fs.mkdirSync(dir, { recursive: true });
 
-    const file = path.join(dir, `${sessionId}.md`);
+    // Filename: YYYYMMDD-<project>-<shortid>.md
+    //   date    = first-prompt local date (this session's file keeps its origin date)
+    //   project = cwd basename (sanitized)
+    //   shortid = first 8 hex of session_id (stable per session)
+    // Cross-day sessions: if a file for this session already exists under any
+    // date, append there instead of starting a new dated file at midnight.
+    const shortId = (sessionId.replace(/[^a-z0-9]/gi, '').slice(0, 8) || 'unknown').toLowerCase();
+    const project = sanitizeName(path.basename(cwd)) || 'root';
+    const nameRe = new RegExp(`^\\d{8}-${escapeRe(project)}-${shortId}\\.md$`);
+    const existing = fs.readdirSync(dir).find(f => nameRe.test(f));
+    const file = existing
+      ? path.join(dir, existing)
+      : path.join(dir, `${dateStamp(new Date())}-${project}-${shortId}.md`);
+
     const ts = localTs(new Date());
     const entry = `\n## ${ts}\n\n${clean}\n`;
 

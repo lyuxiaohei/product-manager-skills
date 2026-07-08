@@ -15,8 +15,10 @@ auto-creates `.prompts/` in whatever project you're in.
 - Hook event `UserPromptSubmit` fires on every prompt; Claude Code pipes a JSON
   payload (`prompt`, `session_id`, `cwd`) to the script's stdin.
 - `assets/save-prompt.js` ensures `<cwd>/.prompts/` exists, then appends
-  `## <local-time>\n\n<prompt>` to `<cwd>/.prompts/<session_id>.md` (header on
-  first prompt of a session).
+  `## <local-time>\n\n<prompt>` to `<cwd>/.prompts/YYYYMMDD-<project>-<shortid>.md`
+  (header on first prompt of a session). `project` = cwd basename, `shortid` =
+  first 8 hex of `session_id`; the date is the first prompt's local date and
+  stays fixed for the session (cross-day sessions append to the same file).
 - **v2 — denoise:** skips tiny / pure-ACK prompts ("继续", "ok", …) so the log
   stays high-signal. **redact:** scrubs common secrets (sk-, gh_, bearer,
   key=value, bigmodel-style tokens) to `[REDACTED]` before writing.
@@ -102,8 +104,10 @@ hold captured history).
   not encrypted).
 - **Performance:** `mkdir`-if-missing + `appendFileSync`, no network — negligible
   per prompt.
-- **Session filename** is the raw `session_id` (parallels the transcript
-  `<session_id>.jsonl`); sort the folder by modified time for recency.
+- **Session filename** is `YYYYMMDD-<project>-<shortid>.md` — date = first
+  prompt's local date, project = cwd basename, shortid = first 8 hex of
+  `session_id` (parallels the transcript `<session_id>.jsonl`). Cross-day
+  sessions keep the first date. Sort the folder by name for chronological order.
 
 ## Resources
 
