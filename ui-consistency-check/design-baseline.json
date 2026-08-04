@@ -1,0 +1,151 @@
+{
+  "name": "Ant Design 5 默认设计系统",
+  "version": "1.0.0",
+  "tokens": {
+    "colors": {
+      "primary": { "value": "#1677ff", "tolerance": 5 },
+      "primaryHover": { "value": "#4096ff", "tolerance": 5 },
+      "primaryActive": { "value": "#0958d9", "tolerance": 5 },
+      "success": { "value": "#52c41a", "tolerance": 5 },
+      "warning": { "value": "#faad14", "tolerance": 5 },
+      "error": { "value": "#ff4d4f", "tolerance": 5 },
+      "textPrimary": { "value": "rgba(0,0,0,0.88)", "tolerance": 3 },
+      "textSecondary": { "value": "rgba(0,0,0,0.65)", "tolerance": 3 },
+      "textTertiary": { "value": "rgba(0,0,0,0.45)", "tolerance": 3 },
+      "textDisabled": { "value": "rgba(0,0,0,0.25)", "tolerance": 3 },
+      "bgBase": { "value": "#ffffff", "tolerance": 3 },
+      "bgLayout": { "value": "#f5f5f5", "tolerance": 5 },
+      "bgContainer": { "value": "#ffffff", "tolerance": 3 },
+      "bgElevated": { "value": "#ffffff", "tolerance": 3 },
+      "borderColor": { "value": "#d9d9d9", "tolerance": 5 },
+      "borderColorSecondary": { "value": "#f0f0f0", "tolerance": 5 },
+      "linkColor": { "value": "#1677ff", "tolerance": 5 }
+    },
+    "typography": {
+      "fontFamily": { "value": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial", "contains": true },
+      "fontSize": {
+        "h1": { "value": "38px", "tolerance": 2 },
+        "h2": { "value": "30px", "tolerance": 2 },
+        "h3": { "value": "24px", "tolerance": 2 },
+        "h4": { "value": "20px", "tolerance": 2 },
+        "h5": { "value": "16px", "tolerance": 1 },
+        "body": { "value": "14px", "tolerance": 1 },
+        "caption": { "value": "12px", "tolerance": 1 }
+      },
+      "fontWeight": {
+        "strong": { "value": "600", "tolerance": 0 },
+        "normal": { "value": "400", "tolerance": 0 },
+        "light": { "value": "300", "tolerance": 0 }
+      },
+      "lineHeight": {
+        "body": { "value": "1.5714285714285714", "tolerance": 0.1 },
+        "heading": { "value": "1.3", "tolerance": 0.1 }
+      }
+    },
+    "spacing": {
+      "xs": { "value": "4px", "tolerance": 1 },
+      "sm": { "value": "8px", "tolerance": 1 },
+      "md": { "value": "12px", "tolerance": 2 },
+      "lg": { "value": "16px", "tolerance": 2 },
+      "xl": { "value": "24px", "tolerance": 2 },
+      "xxl": { "value": "32px", "tolerance": 4 }
+    },
+    "borderRadius": {
+      "sm": { "value": "4px", "tolerance": 2 },
+      "md": { "value": "6px", "tolerance": 2 },
+      "lg": { "value": "8px", "tolerance": 2 },
+      "round": { "value": "9999px", "tolerance": 0 }
+    },
+    "shadows": {
+      "card": { "contains": "0 1px 2px", "tolerance": 0 },
+      "dropdown": { "contains": "0 3px 6px", "tolerance": 0 },
+      "modal": { "contains": "0 6px 16px", "tolerance": 0 }
+    },
+    "components": {
+      "button": {
+        "height": { "sm": "24px", "md": "32px", "lg": "40px" },
+        "paddingX": { "sm": "7px", "md": "15px", "lg": "15px" },
+        "fontSize": { "sm": "12px", "md": "14px", "lg": "16px" },
+        "borderRadius": "6px"
+      },
+      "input": {
+        "height": { "sm": "24px", "md": "32px", "lg": "40px" },
+        "borderRadius": "6px",
+        "borderColor": "#d9d9d9"
+      },
+      "table": {
+        "headerBg": "#fafafa",
+        "rowHoverBg": "#fafafa",
+        "borderColor": "#f0f0f0",
+        "cellPadding": "16px 16px",
+        "fontSize": "14px"
+      },
+      "card": {
+        "borderRadius": "8px",
+        "padding": "24px",
+        "shadow": "0 1px 2px 0 rgba(0,0,0,0.03), 0 1px 6px -1px rgba(0,0,0,0.02), 0 2px 4px 0 rgba(0,0,0,0.02)"
+      },
+      "tag": {
+        "borderRadius": "4px",
+        "paddingX": "8px",
+        "fontSize": "12px",
+        "height": "22px"
+      },
+      "modal": {
+        "borderRadius": "8px",
+        "headerFontSize": "16px",
+        "headerFontWeight": "600"
+      },
+      "breadcrumb": {
+        "fontSize": "14px",
+        "separatorColor": "rgba(0,0,0,0.45)",
+        "lastItemColor": "rgba(0,0,0,0.65)"
+      },
+      "menu": {
+        "itemHeight": "40px",
+        "itemPaddingX": "24px",
+        "itemFontSize": "14px",
+        "activeBg": "rgba(22,119,255,0.08)",
+        "activeColor": "#1677ff"
+      }
+    }
+  },
+  "checkCategories": [
+    {
+      "id": "color",
+      "name": "色彩一致性",
+      "severity": "high",
+      "description": "检查按钮、链接、文本、背景等颜色是否与设计系统一致"
+    },
+    {
+      "id": "typography",
+      "name": "字体一致性",
+      "severity": "high",
+      "description": "检查字号、字体族、字重是否统一"
+    },
+    {
+      "id": "spacing",
+      "name": "间距一致性",
+      "severity": "medium",
+      "description": "检查同类元素的内外边距、栅格对齐"
+    },
+    {
+      "id": "borderRadius",
+      "name": "圆角一致性",
+      "severity": "medium",
+      "description": "检查同类组件的圆角是否统一"
+    },
+    {
+      "id": "component",
+      "name": "组件一致性",
+      "severity": "medium",
+      "description": "检查同类场景是否使用相同组件变体"
+    },
+    {
+      "id": "layout",
+      "name": "布局一致性",
+      "severity": "low",
+      "description": "检查页面整体布局结构是否一致"
+    }
+  ]
+}

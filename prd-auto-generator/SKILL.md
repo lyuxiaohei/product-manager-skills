@@ -1,17 +1,15 @@
 ---
 name: prd-auto-generator
-description: "基于项目源码和业务规格，按版本范围生成产品需求文档(PRD)。模块级3段结构（功能用例与验收/核心流程/数据流向），UC-AC编号体系+用例验收强绑定，Given-When-Then验收，8列字段表含数据口径。适配 logic-list-spec 业务逻辑清单。"
+description: "基于项目源码和业务规格，按版本范围生成完整的产品需求文档(PRD)。叙述体优先，表格为辅。"
 risk: low
 source: project
 date_added: "2026-04-13"
-version: "1.0"
+version: "0.51"
 ---
 
-# PRD文档自动生成技能 V1.0
+# PRD文档自动生成技能 V0.51
 
 > 版本管理见 [VERSIONING.md](VERSIONING.md)
->
-> V0.51 重量版（页面级6节+11列字段表）已归档至 [archive/V0.51-heavy/](archive/V0.51-heavy/)。
 
 ---
 
@@ -19,77 +17,82 @@ version: "1.0"
 
 ### 阶段一：材料收集与分析（用户确认后进入阶段二）
 
-1. **读取原材料** — 按 `rules/material-checklist.md` 顺序：业务逻辑清单 → 导航索引 → 现有PRD → 源码
-2. **确定范围 + 识别模块** — 从导航索引提取版本范围，归类到模块并分配**代号**（Product→P，Order→O）
-3. **识别增量变更** — 对比现有PRD，标注模块为新增/变更/未变更（仅增量版本需要）
-4. **制定撰写计划** — 按 `rules/structure-rules.md` 确定模块编排顺序，提交用户审阅
+1. **读取原材料** — 按 `rules/material-checklist.md` 规定的顺序读取：业务逻辑清单 → 导航索引 → 现有PRD → 源码
+2. **确定版本范围** — 从导航索引提取版本标记，或使用用户指定的页面列表
+3. **识别增量变更** — 对比现有PRD，标注每个页面为新增/变更/未变更（仅增量版本需要）
+4. **梳理页面关系图** — 分析版本范围内页面的跳转关系，输出依赖关系图，提交用户审阅
+5. **梳理操作流程** — 基于页面关系图，生成各页面之间的操作流程，提交用户审阅
+6. **制定撰写计划** — 按 `rules/structure-rules.md` 确定模块编排和撰写顺序，提交用户审阅
 
-### 阶段二：生成PRD（每段写完提交用户审阅）
+### 阶段二：生成版本PRD（每章写完提交用户审阅）
 
-5. **生成版本级** — 范围边界（In/Out Scope，含代号列）+ 角色列表（含代号列）
-6. **按模块生成 3 段**（使用 `templates/prd-module-section.md`）：
-   - 二.{代号}.2 功能用例与验收（UC + AC 强绑定，**首个模块输出测试账号**）
-   - 三.{代号} 核心流程（Mermaid 主流程 + 状态流转含守卫条件 + 异常与边界含非功能）
-   - 四.{代号} 数据流向（CRUD 矩阵 + 8列字段说明，**统计口径作为字段行**）
-7. **生成可选章节** — 单据流转（有核心实体时）、接口时序（跨系统时）、实时通信（有 WebSocket 推送时）
-8. **质量检查 + 合并输出** — 执行 3 项检查，输出到 `PRD/PRD-{项目名}-V{版本}.md`
-
----
+7. 生成版本概述（版本范围、核心功能、数据来源、统计口径、示例账号、重置说明）
+8. 按模块逐页生成页面章节（使用 `templates/prd-page-section.md` 模板）
+   - 新增页面：完整生成全部小节
+   - 变更页面：标注变更点，更新受影响小节
+   - 未变更页面：引用旧版PRD，标注"同 V{上一版本}"
+9. 生成可选章节（数据模型、状态流转等）
+10. 生成页面导航章节（含返回导航、登录拦截子节）
+11. 质量检查（编号连续性、规则去重、交叉引用一致性）
+12. 合并为完整版本PRD，输出到指定路径
 
 ## 输入参数
 
-| 参数 | 说明 | 必填 |
-|------|------|------|
+| 参数名称 | 参数说明 | 必填 |
+|----------|----------|------|
 | 源码目录 | 项目HTML/JS文件根目录 | 是 |
-| 项目名称 | 项目根目录文件夹名（自动提取） | 是 |
-| 版本号 | 如 V0.1、V1.0 | 是 |
+| 项目名称 | 项目根目录的文件夹名称（自动从路径提取） | 是 |
+| 版本号 | 目标版本号，如 V0.1、V1.0 | 是 |
+| 输出路径 | PRD文档保存路径（默认 PRD/） | 否 |
+| 页面列表 | 指定页面清单（覆盖导航索引的版本标记） | 否 |
 | 业务逻辑清单路径 | 业务逻辑清单文件路径 | 是 |
-| 输出路径 | 默认 `PRD/` | 否 |
-| 页面列表 | 覆盖导航索引的版本标记 | 否 |
-| 上一版PRD路径 | 增量版本时提供 | 否 |
-
----
+| 上一版PRD路径 | 增量版本时提供上一版PRD路径 | 否 |
 
 ## 输出规范
 
 ### 输出文件
 
-- 目录：项目根目录 `PRD/`（不存在自动创建）
-- 命名：`PRD-{项目文件夹名}-V{版本号}.md`
-- 骨架：`templates/version-prd.md`；模块章节：`templates/prd-module-section.md`
+- 输出目录：项目根目录下的 `PRD/` 文件夹，不存在时自动创建
+- 文件命名：`PRD-{项目文件夹名称}-V{版本号}.md`（项目名称取当前项目根目录的文件夹名，如项目在 `mini-program/` 下则命名为 `PRD-mini-program-V0.1.md`）
+- 一份完整的版本PRD为一个文件
+- 文件结构遵循 `rules/structure-rules.md` 定义的章节编排
+- 页面章节使用 `templates/prd-page-section.md` 的6节模板
+- 整体骨架使用 `templates/version-prd.md`
 
-### 质量检查项（3 项）
+### 质量检查项
+
+生成完成后自动执行以下检查：
 
 | 检查项 | 说明 |
 |--------|------|
-| **编号** | 标题编号连续无跳号；UC/AC/模块代号全局唯一不跨模块冲突 |
-| **追溯** | UC↔AC「对应用例」列完整，每条验收可追溯到具体用例 |
-| **范围** | In Scope 的每个模块都有 3 段；测试账号全文仅出现一次 |
+| 标题编号连续性 | 页面内小节编号无跳号（2.1.1→2.1.2→2.1.3） |
+| 章节编号连续性 | 二级标题中文数字无跳号（一→二→三） |
+| 规则编号唯一 | RULE-{MODULE}-{SEQ} 无重复编号 |
+| 交叉引用一致 | 页面跳转节中提到的页面在PRD范围内有对应章节 |
+| 流程图语法 | Mermaid代码块可正确渲染，无禁止字符 |
+| 版本范围对齐 | 页面清单中的每个页面在PRD中有对应章节 |
 
 ### 章节结构
 
+详见 `rules/structure-rules.md`。核心结构：
+
 ```
-一、范围边界          [必选]
-二.1 角色列表         [必选]
-二~四 模块3段         [必选，按用户操作路径排序]
-  二.{代号}.2 功能用例与验收
-  三.{代号} 核心流程
-  四.{代号} 数据流向
-{N}、单据流转         [可选 · 有核心实体时]
-{N+1}、接口时序       [可选 · 跨系统时]
-{N+2}、实时通信       [可选 · 有实时推送时]
+一、版本概述       [必选]
+二~N-1、模块章节   [必选，按用户操作路径排序]
+N、数据模型        [可选]
+N+1、页面导航      [必选]
 ```
 
 ---
 
 ## 写作决策
 
-| 内容 | 写法 | 依据 |
-|------|------|------|
-| 用例 / 验收 | UC + AC 表（强绑定） | structure-rules.md |
-| 操作流程 | Mermaid 流程图 + 文字补充 | flowchart-rules.md |
-| 字段 / 校验 / 统计口径 | 8 列字段说明表 | writing-rules.md |
-| 状态流转 | 状态表（含守卫条件） | structure-rules.md |
+| 内容类型 | 写法 | 依据规则 |
+|---------|------|---------|
+| 操作步骤 / 交互流程 | 叙述体 | [rules/writing-rules.md](rules/writing-rules.md) |
+| 字段 / 枚举 / 校验规则 | 表格 | [rules/writing-rules.md](rules/writing-rules.md) |
+| 页面跳转关系 | 跳转表 + 流程图 | [rules/flowchart-rules.md](rules/flowchart-rules.md) |
+| 状态流转 | 状态表 + 流程图 | [rules/flowchart-rules.md](rules/flowchart-rules.md) |
 
 ---
 
@@ -97,16 +100,11 @@ version: "1.0"
 
 | 反模式 | 正确做法 |
 |--------|----------|
-| 臆测未实现的流程 | 每条用例/规则在源码有对应 |
-| 验收标准不绑用例 | 每条 AC 填「对应用例」列，绑定到 UC |
-| 统计口径单列章节 | 作为字段行写入字段说明表，来源列填公式 |
-| 测试账号每模块重复 | 全文仅首个模块输出，其余引用 |
-| 非功能需求单列章节 | 并入「异常与边界」非功能子表 |
-| 忽略清单的角色泳道图 | 映射到「二.1 角色列表」 |
-| 忽略清单的边界条件 | 映射到「异常与边界」非功能子表 |
-| diagram-design 可用却用 Mermaid | 优先 diagram-design，Mermaid 仅备选 |
-| 忽略清单的单据流转/系统时序/推送链路 | 有核心实体/跨系统/实时推送时生成可选章节（含实时通信） |
-| 字段校验在多处重复 | 只写在字段表「校验规则」列 |
+| 臆测未实现的流程 | 每条规则必须在源码有对应 |
+| 叙述体和表格说同一件事 | 叙述体说 why，表格说 what |
+| 跳过质量检查直接输出 | 生成后必须执行检查项 |
+| 流程图未保留 Mermaid 备份 | 必须在 `<details>` 中保留 |
+| diagram-design 可用却使用 Mermaid | 优先 diagram-design |
 
 ---
 
@@ -116,14 +114,14 @@ version: "1.0"
 
 | 模板 | 说明 | 文件 |
 |------|------|------|
-| 版本PRD骨架 | 整篇骨架 + 编号体系 + 设计原则 | [templates/version-prd.md](templates/version-prd.md) V7.0 |
-| 模块 3 段 | 单模块详细结构 + 填写示例 | [templates/prd-module-section.md](templates/prd-module-section.md) V1.0 |
+| 版本PRD骨架 | 整份文档的章节骨架 | [templates/version-prd.md](templates/version-prd.md) |
+| 页面章节 | 单个页面的6节结构 | [templates/prd-page-section.md](templates/prd-page-section.md) |
 
 ### 规则
 
 | 规则 | 说明 | 文件 |
 |------|------|------|
-| 文档结构 | 模块编排 + 编号体系 + 必选/可选章节 | [rules/structure-rules.md](rules/structure-rules.md) V7.0 |
-| 写作规则 | 叙述体优先、不重复、按需 | [rules/writing-rules.md](rules/writing-rules.md) V6.0 |
-| 流程图规则 | diagram-design 优先 + Mermaid 规范 | [rules/flowchart-rules.md](rules/flowchart-rules.md) V0.13 |
-| 材料清单 | 读取顺序 + 清单→模块3段映射 | [rules/material-checklist.md](rules/material-checklist.md) V7.0 |
+| 材料清单 | 原材料读取顺序和策略 | [rules/material-checklist.md](rules/material-checklist.md) |
+| 文档结构 | 章节编排、编号规则、模块排序 | [rules/structure-rules.md](rules/structure-rules.md) |
+| 写作规则 | 叙述体写法、表格使用原则、去重规则 | [rules/writing-rules.md](rules/writing-rules.md) |
+| 流程图规则 | Mermaid流程图绘制规范 | [rules/flowchart-rules.md](rules/flowchart-rules.md) |
