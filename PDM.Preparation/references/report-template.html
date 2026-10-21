@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>预调研报告-{公司}-{领域}-{YYYYMMDD}</title>
+<style>
+  :root{
+    --bg:#14161a; --panel:#1d2026; --panel2:#23262e; --border:#33363e;
+    --text:#e8eaed; --muted:#9aa0a6; --accent:#4f9cf9;
+    --ok:#34c77b; --warn:#e8a33d; --bad:#e05656; --gold:#e8c33d;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:"Microsoft YaHei","PingFang SC",sans-serif; line-height:1.7; padding:24px;}
+  .wrap{max-width:1200px; margin:0 auto;}
+  h1{font-size:26px; padding-bottom:12px; border-bottom:2px solid var(--accent); margin-bottom:6px;}
+  .meta{color:var(--muted); font-size:13px; margin-bottom:24px;}
+  .meta span{margin-right:18px;}
+  h2{font-size:20px; margin:32px 0 14px; padding-left:10px; border-left:4px solid var(--accent);}
+  h3{font-size:16px; margin:20px 0 10px; color:var(--accent);}
+  table{width:100%; border-collapse:collapse; margin:10px 0 18px; font-size:13.5px;}
+  th{background:var(--panel2); color:var(--text); text-align:left; padding:8px 10px; border:1px solid var(--border);}
+  td{padding:7px 10px; border:1px solid var(--border); vertical-align:top;}
+  tr:nth-child(even) td{background:var(--panel);}
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:16px 20px; margin:10px 0 18px;}
+  .tag{display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; margin-right:6px; white-space:nowrap;}
+  .tag-p0{background:#4a1f1f; color:#ff8f8f;}
+  .tag-p1{background:#4a3a1f; color:#ffd58f;}
+  .tag-p2{background:#1f3a4a; color:#8fd0ff;}
+  .tag-role{background:#2a2d35; color:var(--muted);}
+  .tag-ok{background:#1f4a33; color:#7fe0ae;}
+  .tag-pend{background:#4a3a1f; color:var(--gold);}
+  .tag-no{background:#4a1f2a; color:#ff8fb8;}
+  .stars{color:var(--gold); letter-spacing:2px;}
+  .dim{color:var(--muted); font-size:12.5px;}
+  .quote{border-left:3px solid var(--warn); background:var(--panel); padding:10px 14px; margin:8px 0; border-radius:0 6px 6px 0;}
+  .hyp{background:var(--panel); border:1px dashed var(--border); border-left:4px solid var(--gold); border-radius:6px; padding:12px 16px; margin:10px 0;}
+  .hyp .id{font-weight:bold; color:var(--gold);}
+  .foot{margin-top:40px; padding-top:12px; border-top:1px solid var(--border); color:var(--muted); font-size:12px;}
+  .print-note{background:#2a2d35; padding:8px 12px; border-radius:6px; font-size:12.5px; color:var(--muted); margin-bottom:14px;}
+  @media print{
+    body{background:#fff; color:#111; padding:0;}
+    .panel,.card{background:#fafafa;}
+    th{background:#eee;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>预调研报告 · {公司} · {业务领域}</h1>
+<div class="meta">
+  <span>📅 {YYYYMMDD}</span>
+  <span>🏷️ 业务领域：{领域}</span>
+  <span>📊 附：竞品矩阵 Excel（{文件名}）</span>
+  <span>引擎：PDM.Preparation（产品经理预调研）v1.5</span>
+</div>
+
+<!-- ============ 1 公司画像 ============ -->
+<h2>一、公司画像</h2>
+<div class="card">
+  <table>
+    <tr><th style="width:160px;">规模档位</th><td>{大/中/小型企业} — {依据}</td></tr>
+    <tr><th>数字化成熟度预判</th><td>{高/中/低} — {依据：招聘/招标/存量系统信号}</td></tr>
+    <tr><th>存量系统线索</th><td>{发现到的现有系统，含来源}</td></tr>
+    <tr><th>需求信号</th><td>{招IT岗/招标记录/业务扩张等}</td></tr>
+    <tr><th>时机信号</th><td>{扩仓/融资/换届/招标等时间窗口}</td></tr>
+  </table>
+  <div class="dim">信息来源：{官网/招聘/招标/新闻/用户口述}；未查到的字段已向用户确认或标注缺口。</div>
+</div>
+
+<!-- ============ 2 竞品矩阵摘要（功能-菜单总表） ============ -->
+<h2>二、竞品矩阵摘要 · 功能-菜单总表</h2>
+<div class="print-note">单张总表三个用途：<b>原型骨架底稿</b>（一级菜单=功能概述组、二级=菜单路径列，初绘原型直接取用）＋<b>竞品证据地图</b>（?格=现场演示验证清单）＋<b>选型对比</b>。完整星级/评分对比见同目录 Excel。标记：<span class="icx icx-y"></span>＝公开资料可证（标注来源）｜<span class="icx icx-q"></span>＝待查证｜<span class="icx icx-n"></span>＝公开资料明确无。检索日期 {YYYYMMDD}；收费模式/价格带/客群见 Excel 附加列。竞品公司信息卡内容降级为表尾来源附注。</div>
+<style>
+  .icx{display:inline-block;width:16px;height:16px;background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:-3px;}
+  .icx-y{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2334c77b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpolyline points='8 12.5 11 15.5 16 9.5'/%3E%3C/svg%3E");}
+  .icx-q{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e8a33d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4.5'/%3E%3Cline x1='12' y1='17.5' x2='12' y2='17.6'/%3E%3C/svg%3E");}
+  .icx-n{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239aa0a6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='8' y1='12' x2='16' y2='12'/%3E%3C/svg%3E");}
+  .ck{text-align:center;width:50px;}
+  .menu-desc{font-size:11.5px;color:var(--muted);font-weight:normal;}
+</style>
+<table>
+  <tr><th style="width:90px">功能概述</th><th style="width:250px">菜单路径与说明</th><th style="width:100px">需求关联</th><th class="ck">{竞品A}</th><th class="ck">{竞品B}</th><th class="ck">{竞品C}</th><th class="ck">{参照行*}</th></tr>
+  <tr>
+    <td rowspan="2"><b>{功能概述A}</b></td>
+    <td><b>{模块 &gt; 菜单}</b><br><span class="menu-desc">{一句话说明：这个菜单干什么、关键动作/产出}</span></td>
+    <td class="dim">{R#/P#/M-Q#}</td>
+    <td class="ck"><span class="icx icx-y" title="公开资料可证"></span></td>
+    <td class="ck"><span class="icx icx-q" title="待查证"></span></td>
+    <td class="ck"><span class="icx icx-y" title="公开资料可证"></span></td>
+    <td class="ck"><span class="icx icx-n" title="公开资料明确无"></span></td>
+  </tr>
+  <tr>
+    <td><b>{模块 &gt; 菜单}</b><br><span class="menu-desc">{说明}</span></td>
+    <td class="dim">{关联}</td>
+    <td class="ck"><span class="icx icx-q"></span></td>
+    <td class="ck"><span class="icx icx-y"></span></td>
+    <td class="ck"><span class="icx icx-q"></span></td>
+    <td class="ck"><span class="icx icx-n"></span></td>
+  </tr>
+</table>
+<div class="dim">表格信息职责清单（改版清点，禁静默丢列）：骨架层级 / 菜单说明 / 需求关联 / 竞品覆盖 / 来源可信度 / 标记体系。*参照行标注"非同类"。标记资产与纪律见 references/report-assets.md。</div>
+
+<h3>竞品公司信息卡</h3>
+<div class="card">
+  <b>{竞品A 公司名}</b>：{一句话背景（主营/客群/体量）}
+  <div class="quote" style="margin-top:8px;">功能菜单：{一级菜单} > {二级菜单} ｜ {一级菜单} > {二级菜单} …</div>
+  <div class="dim">来源：{官网/产品手册/演示视频}；未查到部分标"待查证"</div>
+</div>
+<div class="card">
+  <b>{竞品B 公司名}</b>：{一句话背景}
+  <div class="quote" style="margin-top:8px;">功能菜单：{…}</div>
+  <div class="dim">来源：{…}；未查到部分标"待查证"</div>
+</div>
+
+<!-- ============ 3 问题清单 ============ -->
+<h2>三、调研问题清单（主线化 · 全局编号 M/OP/GT/H）</h2>
+<div class="print-note">按业务主线分线，每条线顺着往下问——后一问由前一问的答案自然引出。不设提问对象（谁在场问谁）。</div>
+
+<h3>主线 1 · {核心物/作业流}（顺着一件{物}走）</h3>
+<div class="card">
+  <div>M1-Q1. <b>【必问】</b>{现状：现在怎么记的？}</div>
+  <div class="dim">↳ M1-Q2. {顺着"对不上"：大概有多少对不上的？}</div>
+  <div class="dim">↳ M1-Q3. {顺着差异：怎么被发现的？晚了多久？}</div>
+  <div class="dim">↳ M1-Q4. {落到钱：一年折多少？}</div>
+  <div class="dim">↳ M1-Q5~Q7. {识别方式 → 动线 → 仓网分布}</div>
+  <div class="dim">↳ AI·机会【选问】（挂在靠人记/人盯的步骤）：频次·单次耗时·规则在文件还是脑子里·语料在哪·做错最贵一次多少？</div>
+  <div>M1-Q8. <b>【收口·必问】</b>{如果明天就能……，你最想先解决哪件事？}</div>
+</div>
+
+<h3>主线 2 · 钱（报价→结算→回款）</h3>
+<div class="card">
+  <div>M2-Q1. <b>【必问】</b>{现在怎么报价/计费？几种算法？}</div>
+  <div class="dim">↳ M2-Q2~Q3. {报价速度 → 月度对账人力}</div>
+  <div class="dim">↳ M2-Q4. <b>【必问】</b>{对账差异拒付/拖款？占压资金？}</div>
+  <div class="dim">↳ M2-Q5~Q6. {异常费怎么收 → 押金保证金}</div>
+  <div class="dim">↳ AI·机会【选问】（挂在对账/异常判定）：月度人时·规则成文度·历史语料·判错代价？</div>
+  <div>M2-Q7. <b>【收口·必问】</b>{最卡现金流的是哪一步？}</div>
+</div>
+
+<h3>主线 3 · 决策与扩张</h3>
+<div class="card">
+  <div>M3-Q1. <b>【必问】</b>{为什么是现在？导火索？}</div>
+  <div class="dim">↳ M3-Q2~Q4. {谁拍板/预算 → 扩张计划留量 → 老板每月看什么数}</div>
+  <div>M3-Q5. <b>【必问】</b>{数据上云？保密要求？上线后谁在用？}</div>
+</div>
+
+<h3>机会点验证问题（来自竞品空白 × 公司特点）</h3>
+<div class="card">
+  <div>OP1. <b>【验证机会】</b>{机会点1：{空白场景}现在是怎么处理的？}</div>
+  <div class="dim">↳ 依据：{矩阵空白/公司特征}</div>
+  <div>OP2. <b>【验证机会·AI】</b>{XX 智能场景现在是怎么处理的？同行有做的吗？}</div>
+  <div class="dim">↳ 依据：{AI 功能分组空白 × 人工密集特征}</div>
+</div>
+
+<h3>顺手要东西（现场必拿，喂第一版原型）</h3>
+<div class="card">
+  <table>
+    <tr><th style="width:44px;">#</th><th>实物</th><th>喂给原型什么</th></tr>
+    <tr><td>GT①</td><td>台账 Excel（含列头）</td><td class="dim">所有列表页/详情页字段</td></tr>
+    <tr><td>GT②</td><td>{领域}单据样张</td><td class="dim">单据页面 + 操作动线</td></tr>
+    <tr><td>GT③</td><td>计费条款原文</td><td class="dim">计费配置页 + 账单页</td></tr>
+    <tr><td>GT④</td><td>实物标签照片</td><td class="dim">扫码/PDA 操作页</td></tr>
+    <tr><td>GT⑤</td><td>角色与设备（经 M3-Q5 覆盖，非实物件）</td><td class="dim">权限简设 + 页面载体</td></tr>
+    <tr><td>GT⑥</td><td>老板报表指标（经 M3-Q4 覆盖，非实物件）</td><td class="dim">报表/驾驶舱页</td></tr>
+    <tr><td>GT⑦</td><td>仓库/客户/型号清单</td><td class="dim">基础数据导入方案</td></tr>
+  </table>
+  <div class="dim">角色与设备、老板报表指标两类信息经主线 3 Q4/Q5 采集，不单列实物；GT 编号与 funnel-framework 7 类对齐。</div>
+</div>
+
+<!-- ============ 附录 ============ -->
+<h2>附录 A · 调研现场指导</h2>
+<h3>会前摘要（带假设去验证，非纯记录）</h3>
+<div class="quote">{客户背景三句话 + 核心痛点假设一句话}</div>
+<h3>会中追问原则</h3>
+<div class="quote">量化内核已融入主线追问链：把形容词变成数字——"效率低"→低在哪步/多少单人天；"丢得多"→一年折多少钱；"对不上"→差异率多少/多久才发现。</div>
+<h3>两场次抽取视图（原第四章迁入）</h3>
+<table>
+  <tr><th style="width:120px;">场次</th><th>内容</th><th>目标</th></tr>
+  <tr><td>🏭 现场调研</td><td>三条主线全程 + 机会点验证 + 顺手要东西（实物采集）</td><td>痛点量化、期望锚定、拿到实物</td></tr>
+  <tr><td>📐 原型确认</td><td>假设验证 + MoSCoW 收口</td><td>验证假设、圈定范围</td></tr>
+</table>
+
+<!-- ============ 附录 B 假设库 ============ -->
+<h2>附录 B · 售前假设库（初始版）</h2>
+<div class="hyp">
+  <span class="id">[H1]</span> {假设内容}
+  <div class="dim">类型：{行业痛点/竞品短板/时机} ｜ 依据：{} ｜ 验证：问题 #N ｜ 状态：<span class="tag tag-pend">待验证</span></div>
+</div>
+<div class="hyp">
+  <span class="id">[H2]</span> {假设内容}
+  <div class="dim">类型：{} ｜ 依据：{} ｜ 验证：问题 #N ｜ 状态：<span class="tag tag-pend">待验证</span></div>
+</div>
+
+<!-- ============ 附录 C 就绪度 ============ -->
+<h2>附录 C · 原型就绪度评估</h2>
+<div class="card">
+  <h3>就绪度条（启发式估计）</h3>
+  <div class="quote">仅主线问答完成 ≈ <b>40%</b> ｜ 补齐实物采集 ≈ <b>90%+</b></div>
+  <h3>两步走结论</h3>
+  <table>
+    <tr><th>产物</th><th>时点</th><th>形态</th></tr>
+    <tr><td>🏗️ 框架级破冰原型</td><td><b>现在可做</b></td><td>页面骨架 + 占位字段，用于首轮沟通锚定方向</td></tr>
+    <tr><td>📐 完整版可讨论原型</td><td>调研后</td><td>真实字段 + 真实计费 + 真实单据流，用于需求确认</td></tr>
+  </table>
+  <div class="dim">就绪度百分比为启发式估计，非精确测量。</div>
+</div>
+
+<!-- ============ 附录 D 复跑差异视图（复跑模式产出，会前版不渲染） ============ -->
+<h2>附录 D · 复跑差异视图</h2>
+<div class="print-note">仅复跑模式（会后轻量回写）渲染本附录；会前版报告不含。</div>
+<h3>假设状态差异</h3>
+<table>
+  <tr><th style="width:60px;">假设</th><th>原状态</th><th>新状态</th><th>纪要/记录依据</th></tr>
+  <tr><td>[H1]</td><td>{待验证}</td><td>{已验证/证伪/部分验证}</td><td class="dim">{原文引用}</td></tr>
+</table>
+<h3>AI 信号段落索引（定位用）</h3>
+<table>
+  <tr><th>段落位置</th><th>上下文一句话</th><th>对应主线/OP 编号（如有）</th></tr>
+  <tr><td class="dim">{第X段/行X}</td><td>{…}</td><td>{M1-Q5 / OP2 / NEW}</td></tr>
+</table>
+<div class="dim">本索引仅定位 AI 相关段落，不做分级判断——分级与方案统一由 PDM.Preparation-Analysis 产出四《AI 潜在节点方案》执行。</div>
+
+<div class="foot">
+  PDM.Preparation（产品经理预调研）引擎 v1.5 ｜ 竞品信息检索日期 {YYYYMMDD}，有时效性 ｜ 推断项均已标注"推断（需验证）" ｜ 会后转化请走 PDM.Preparation-Analysis（四件产出）；本报告复跑仅轻量回写假设与画像
+</div>
+
+</div>
+</body>
+</html>

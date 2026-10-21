@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>包装租赁管理后台·首绘演示 V1</title>
+<style>
+:root{--primary:#1677ff;--bg:#f5f6f8;--line:#e5e6eb;--text:#1d2129;--sub:#86909c;--ok:#00b42a;--warn:#ff7d00;--err:#f53f3f}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:14px/1.6 "Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg)}
+.layout{display:flex;min-height:100vh}
+/* 顶栏 */
+.topbar{position:fixed;top:0;left:0;right:0;height:48px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:10}
+.topbar .logo{font-size:16px;font-weight:700;color:var(--primary)}
+.topbar .tag{font-size:12px;color:var(--sub);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:0 8px}
+.topbar .right{margin-left:auto;color:var(--sub);font-size:13px}
+/* 侧边栏 */
+.sidebar{position:fixed;top:48px;bottom:0;left:0;width:200px;background:#fff;border-right:1px solid var(--line);padding:12px 8px;overflow-y:auto}
+.menu-group{font-size:12px;color:var(--sub);padding:10px 12px 4px}
+.menu-item{display:block;padding:8px 12px;border-radius:6px;color:var(--text);cursor:pointer;margin:2px 0}
+.menu-item:hover{background:var(--bg)}
+.menu-item.selected{background:#e8f3ff;color:var(--primary);font-weight:600}
+/* 内容区 */
+.main{margin:48px 0 0 200px;padding:20px 24px;flex:1}
+.page{display:none}
+.page.show{display:block}
+.page-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.page-head h2{font-size:18px}
+/* 卡片 */
+.card{background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:16px}
+.card-head{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.card-title{font-size:15px;font-weight:600}
+.head-btns{margin-left:auto;display:flex;gap:8px}
+.card-body{padding:16px}
+/* 按钮 */
+.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 14px;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:13px}
+.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.primary:hover{opacity:.88}
+/* 筛选 */
+.filter{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 14px}
+.filter label{font-size:12px;color:var(--sub);display:block;margin-bottom:2px}
+.filter input,.filter select{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font-size:13px}
+.filter-actions{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
+/* 表格 */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#fafafa;color:var(--sub);font-weight:500;text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:hover td{background:#fafbfc}
+.badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px}
+.b-blue{background:#e8f3ff;color:var(--primary)}
+.b-green{background:#e8ffea;color:var(--ok)}
+.b-orange{background:#fff7e8;color:var(--warn)}
+.b-gray{background:#f2f3f5;color:var(--sub)}
+.link{color:var(--primary);cursor:pointer;margin-right:8px}
+/* 表单 */
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 16px}
+.form-item label{font-size:12px;color:var(--sub);display:block;margin-bottom:3px}
+.form-item label .req{color:var(--err);margin-right:2px}
+.form-item input,.form-item select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:6px;font-size:13px}
+.submit-bar{display:flex;gap:10px;justify-content:flex-end;padding-top:14px;border-top:1px solid var(--line);margin-top:16px}
+.note{font-size:12px;color:var(--sub);background:var(--bg);border-radius:6px;padding:8px 12px;margin-bottom:12px}
+/* 弹窗提示 */
+#toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(29,33,41,.88);color:#fff;font-size:13px;padding:8px 18px;border-radius:6px;display:none;z-index:99}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="logo">包装租赁管理后台</span>
+  <span class="tag">首绘演示 V1 · 桶①全量 · 静态无数据</span>
+  <span class="right">演示用户 · 项目经理</span>
+</div>
+<div id="toast"></div>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="menu-group">项目管理</div>
+  <a class="menu-item selected" data-page="p1" onclick="go('p1')">项目列表</a>
+  <div class="menu-group">基础资料</div>
+  <a class="menu-item" data-page="p2" onclick="go('p2')">物料档案</a>
+  <div class="menu-group">采购管理</div>
+  <a class="menu-item" data-page="p3" onclick="go('p3')">采购订单</a>
+  <div class="menu-group">仓储作业</div>
+  <a class="menu-item" data-page="p4" onclick="go('p4')">小组装单</a>
+  <a class="menu-item" data-page="p5" onclick="go('p5')">库存查询</a>
+  <div class="menu-group">循环包装租赁</div>
+  <a class="menu-item" data-page="p6" onclick="go('p6')">租赁单</a>
+  <a class="menu-item" data-page="p7" onclick="go('p7')">新建租赁出库</a>
+  <div class="menu-group">财务协同</div>
+  <a class="menu-item" data-page="p8" onclick="go('p8')">应收与核销</a>
+</nav>
+
+<main class="main">
+
+<!-- 1 项目列表 -->
+<section class="page show" id="p1">
+  <div class="page-head"><h2>项目列表</h2><span class="note" style="margin:0">按项目编码·绑定上下游·看盈收（0831 要点⑥:06）</span></div>
+  <div class="card"><div class="card-head"><h3 class="card-title">筛选</h3></div>
+    <div class="card-body"><div class="filter">
+      <div><label>项目编码</label><input placeholder="如 PRJ-WUH-001"></div>
+      <div><label>项目名称</label><input placeholder="如 芜湖项目"></div>
+      <div><label>客户</label><select><option>全部</option><option>客户A</option><option>客户B</option></select></div>
+      <div><label>状态</label><select><option>全部</option><option>进行中</option><option>已结束</option></select></div>
+      <div class="filter-actions"><button class="btn" onclick="toast('演示：筛选未接数据')">查询</button><button class="btn" onclick="resetFilters(this)">重置</button></div>
+    </div></div>
+  </div>
+  <div class="card"><div class="card-head"><h3 class="card-title">项目</h3>
+    <div class="head-btns"><button class="btn primary" onclick="toast('演示：新建项目（首绘演示级）')">+ 新建项目</button></div></div>
+    <div class="card-body"><table>
+      <tr><th>项目编码</th><th>项目名称</th><th>客户（下游）</th><th>供应商（上游）</th><th>在租量</th><th>本月营收</th><th>状态</th><th>操作</th></tr>
+      <tr><td>PRJ-WUH-001</td><td>芜湖项目</td><td>客户A</td><td>路凯 / 配件商×3</td><td>围板箱 320</td><td>¥186,400</td><td><span class="badge b-green">进行中</span></td><td><span class="link" onclick="toast('演示：项目详情')">详情</span><span class="link" onclick="toast('演示：上下游关系')">上下游</span></td></tr>
+      <tr><td>PRJ-HF-002</td><td>合肥项目</td><td>客户B</td><td>路凯 / 配件商×2</td><td>围板箱 150</td><td>¥92,700</td><td><span class="badge b-green">进行中</span></td><td><span class="link" onclick="toast('演示：项目详情')">详情</span><span class="link" onclick="toast('演示：上下游关系')">上下游</span></td></tr>
+      <tr><td>PRJ-WH-003</td><td>武汉项目</td><td>客户C</td><td>自购 / 配件商×1</td><td>托盘 80</td><td>¥41,200</td><td><span class="badge b-orange">待启动</span></td><td><span class="link" onclick="toast('演示：项目详情')">详情</span><span class="link" onclick="toast('演示：上下游关系')">上下游</span></td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 2 物料档案 -->
+<section class="page" id="p2">
+  <div class="page-head"><h2>物料档案</h2></div>
+  <div class="card"><div class="card-head"><h3 class="card-title">物料</h3>
+    <div class="head-btns"><button class="btn primary" onclick="toast('演示：新建物料')">+ 新建物料</button></div></div>
+    <div class="card-body"><table>
+      <tr><th>物料编码</th><th>名称</th><th>类型</th><th>子母件</th><th>组成</th><th>计量</th><th>操作</th></tr>
+      <tr><td>WL-1001</td><td>围板箱 1200×1000</td><td>包材·租赁循环</td><td>母件</td><td>= 围板 + 盖 + 内衬×2</td><td>个</td><td><span class="link" onclick="toast('演示：详情')">详情</span><span class="link" onclick="toast('演示：BOM')">BOM</span></td></tr>
+      <tr><td>WL-2001</td><td>内衬 EPE</td><td>包材·配件</td><td>子件</td><td>—</td><td>个</td><td><span class="link" onclick="toast('演示：详情')">详情</span></td></tr>
+      <tr><td>WL-3001</td><td>组合支架 C（A+B→C）</td><td>组件</td><td>母件</td><td>= 支架A + 托架B</td><td>套</td><td><span class="link" onclick="toast('演示：详情')">详情</span><span class="link" onclick="toast('演示：BOM')">BOM</span></td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 3 采购订单 -->
+<section class="page" id="p3">
+  <div class="page-head"><h2>采购订单</h2></div>
+  <div class="card"><div class="card-head"><h3 class="card-title">订单</h3>
+    <div class="head-btns"><button class="btn primary" onclick="toast('演示：新建采购订单')">+ 新建订单</button></div></div>
+    <div class="card-body"><table>
+      <tr><th>单号</th><th>供应商</th><th>项目</th><th>物料</th><th>数量</th><th>金额</th><th>状态</th><th>操作</th></tr>
+      <tr><td>PO-26090012</td><td>路凯</td><td>芜湖项目</td><td>围板箱 1200×1000</td><td>200</td><td>¥140,000</td><td><span class="badge b-blue">已审核</span></td><td><span class="link" onclick="toast('演示：详情')">详情</span><span class="link" onclick="toast('演示：生成入库单')">生成入库单</span></td></tr>
+      <tr><td>PO-26090013</td><td>配件商甲</td><td>芜湖项目</td><td>内衬 EPE</td><td>2,000</td><td>¥16,000</td><td><span class="badge b-orange">待审核</span></td><td><span class="link" onclick="toast('演示：审核')">审核</span></td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 4 小组装单 -->
+<section class="page" id="p4">
+  <div class="page-head"><h2>小组装单</h2><span class="note" style="margin:0">A+B→C·组装量由运营方申报入库（0831 王琳总提议·刘总认可）</span></div>
+  <div class="card"><div class="card-head"><h3 class="card-title">组装单</h3>
+    <div class="head-btns"><button class="btn primary" onclick="go('p9')">+ 新建组装单</button></div></div>
+    <div class="card-body"><table>
+      <tr><th>单号</th><th>项目</th><th>产出组合</th><th>耗用子件</th><th>数量</th><th>执行方</th><th>状态</th><th>操作</th></tr>
+      <tr><td>ZZ-26090101</td><td>芜湖项目</td><td>组合支架 C</td><td>支架A×1 + 托架B×1</td><td>40</td><td>仓库运营方</td><td><span class="badge b-green">已入库</span></td><td><span class="link" onclick="toast('演示：详情')">详情</span></td></tr>
+      <tr><td>ZZ-26090102</td><td>合肥项目</td><td>围板箱整套</td><td>围板×1 + 盖×1 + 内衬×2</td><td>60</td><td>仓库运营方</td><td><span class="badge b-orange">待确认</span></td><td><span class="link" onclick="toast('演示：确认')">确认</span></td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 5 库存查询 -->
+<section class="page" id="p5">
+  <div class="page-head"><h2>库存查询</h2><span class="note" style="margin:0">精确到零配件（0831 要点 14:04）</span></div>
+  <div class="card"><div class="card-head"><h3 class="card-title">库存</h3></div>
+    <div class="card-body"><table>
+      <tr><th>物料编码</th><th>名称</th><th>类型</th><th>在库</th><th>在客户处（在租）</th><th>在途</th><th>待入库（退租）</th><th>操作</th></tr>
+      <tr><td>WL-1001</td><td>围板箱 1200×1000</td><td>包材</td><td>180</td><td>320</td><td>60</td><td>45</td><td><span class="link" onclick="toast('演示：库存明细')">明细</span></td></tr>
+      <tr><td>WL-2001</td><td>内衬 EPE</td><td>配件</td><td>2,340</td><td>—</td><td>—</td><td>—</td><td><span class="link" onclick="toast('演示：库存明细')">明细</span></td></tr>
+      <tr><td>WL-3001</td><td>组合支架 C</td><td>组件</td><td>96</td><td>40</td><td>—</td><td>—</td><td><span class="link" onclick="toast('演示：库存明细')">明细</span></td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 6 租赁单 -->
+<section class="page" id="p6">
+  <div class="page-head"><h2>租赁单</h2></div>
+  <div class="card"><div class="card-head"><h3 class="card-title">租赁单</h3>
+    <div class="head-btns"><button class="btn primary" onclick="go('p7')">+ 新建租赁出库</button></div></div>
+    <div class="card-body"><table>
+      <tr><th>单号</th><th>项目</th><th>客户</th><th>物料</th><th>数量</th><th>出库日期</th><th>状态</th><th>操作</th></tr>
+      <tr><td>ZL-26090101</td><td>芜湖项目</td><td>客户A</td><td>围板箱 1200×1000</td><td>120</td><td>2026-09-12</td><td><span class="badge b-blue">在租</span></td><td><span class="link" onclick="toast('演示：详情')">详情</span><span class="link" onclick="toast('演示：发起退租·入口待拍板')">退租</span></td></tr>
+      <tr><td>ZL-26090102</td><td>合肥项目</td><td>客户B</td><td>组合支架 C</td><td>40</td><td>2026-09-20</td><td><span class="badge b-blue">在租</span></td><td><span class="link" onclick="toast('演示：详情')">详情</span><span class="link" onclick="toast('演示：发起退租·入口待拍板')">退租</span></td></tr>
+      <tr><td>ZL-26090103</td><td>芜湖项目</td><td>客户A</td><td>围板箱 1200×1000</td><td>80</td><td>2026-08-30</td><td><span class="badge b-orange">退租待入库</span></td><td><span class="link" onclick="toast('演示：详情')">详情</span></td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 7 新建租赁出库 -->
+<section class="page" id="p7">
+  <div class="page-head"><h2>新建租赁出库</h2></div>
+  <div class="card"><div class="card-head"><h3 class="card-title">租赁信息</h3></div>
+    <div class="card-body"><div class="form-grid">
+      <div class="form-item"><label><span class="req">*</span>项目</label><select><option>请选择</option><option>PRJ-WUH-001 芜湖项目</option><option>PRJ-HF-002 合肥项目</option></select></div>
+      <div class="form-item"><label><span class="req">*</span>客户</label><select><option>请选择</option><option>客户A</option><option>客户B</option></select></div>
+      <div class="form-item"><label><span class="req">*</span>出库日期</label><input type="date" value="2026-09-29"></div>
+      <div class="form-item"><label><span class="req">*</span>物料</label><select><option>请选择</option><option>围板箱 1200×1000</option><option>组合支架 C</option></select></div>
+      <div class="form-item"><label><span class="req">*</span>数量</label><input placeholder="如 120"></div>
+      <div class="form-item"><label>备注</label><input placeholder="选填"></div>
+    </div>
+    <div class="note" style="margin-top:12px">计费口径（按天/按次）＝待定 Q01，首绘暂不落在表单；起租时点＝待定 Q02。</div>
+    <div class="submit-bar"><button class="btn" onclick="go('p6')">取消</button><button class="btn primary" onclick="toast('演示：已保存（未接数据）');go('p6')">保存</button></div>
+  </div></div>
+</section>
+
+<!-- 8 应收与核销 -->
+<section class="page" id="p8">
+  <div class="page-head"><h2>应收与核销</h2><span class="note" style="margin:0">出入库→开票→银行水单核销（0831 要点 6:06）</span></div>
+  <div class="card"><div class="card-head"><h3 class="card-title">应收账单</h3></div>
+    <div class="card-body"><table>
+      <tr><th>账单号</th><th>项目</th><th>客户</th><th>来源单据</th><th>金额</th><th>开票状态</th><th>核销状态</th><th>操作</th></tr>
+      <tr><td>YS-26090021</td><td>芜湖项目</td><td>客户A</td><td>租赁单 ZL-26090101</td><td>¥62,400</td><td><span class="badge b-green">已开票</span></td><td><span class="badge b-green">已核销</span></td><td><span class="link" onclick="toast('演示：水单匹配')">水单</span></td></tr>
+      <tr><td>YS-26090022</td><td>合肥项目</td><td>客户B</td><td>租赁单 ZL-26090102</td><td>¥18,000</td><td><span class="badge b-orange">待开票</span></td><td><span class="badge b-gray">未核销</span></td><td><span class="link" onclick="toast('演示：去开票')">开票</span></td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 9 新建组装单 -->
+<section class="page" id="p9">
+  <div class="page-head"><h2>新建组装单</h2></div>
+  <div class="card"><div class="card-head"><h3 class="card-title">组装信息</h3></div>
+    <div class="card-body"><div class="form-grid">
+      <div class="form-item"><label><span class="req">*</span>项目</label><select><option>请选择</option><option>芜湖项目</option><option>合肥项目</option></select></div>
+      <div class="form-item"><label><span class="req">*</span>产出组合（母件）</label><select><option>请选择</option><option>组合支架 C（A+B）</option><option>围板箱整套</option></select></div>
+      <div class="form-item"><label><span class="req">*</span>组装数量</label><input placeholder="如 40"></div>
+      <div class="form-item"><label><span class="req">*</span>执行方</label><select><option>请选择</option><option>仓库运营方</option><option>我方自组装</option></select></div>
+      <div class="form-item"><label><span class="req">*</span>完成日期</label><input type="date" value="2026-09-29"></div>
+      <div class="form-item"><label>备注</label><input placeholder="选填"></div>
+    </div>
+    <div class="note" style="margin-top:12px">保存后子件库存即时扣减、母件入库——「何时组装、组装多少」入系统（替代现状出货时倒扣）。</div>
+    <div class="submit-bar"><button class="btn" onclick="go('p4')">取消</button><button class="btn primary" onclick="toast('演示：已保存（未接数据）');go('p4')">保存</button></div>
+  </div></div>
+</section>
+
+</main>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('show')});
+  document.getElementById(id).classList.add('show');
+  document.querySelectorAll('.menu-item').forEach(function(m){
+    m.classList.toggle('selected', m.getAttribute('data-page')===id);
+  });
+}
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.style.display='block';
+  clearTimeout(t._h); t._h=setTimeout(function(){t.style.display='none'},1800);
+}
+function resetFilters(btn){
+  btn.closest('.card-body').querySelectorAll('input').forEach(function(i){i.value=''});
+  toast('演示：已重置');
+}
+</script>
+</body>
+</html>
