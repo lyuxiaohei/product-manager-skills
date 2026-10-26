@@ -5,6 +5,7 @@
 2026-10-26 完成**四向对齐**：① 回流当日 A34 权威源 09:13 修订轮（10 个 PDM 技能 1.x 升级，经三端 md5 核验与权威源三方一致）；② 回流 paseo / paseo-plugin（安装端 10-22 版）；③ 收录 8 个缺口技能（admin-ui-spec、humanizer 英文原版、logic-list-spec v2.0、mermaid-diagram-specialist、PDM.Model-Routing、paseo-loop、web-design-guidelines、xlsx），仓库可发现技能 60→**69，追平四位置全集**；④ 扶正 product-manager-toolkit 双嵌套（就地 mv，内容取更晚的 03-18 版）；⑤ logic-list-spec-qoder 技能名改为 logic-list-spec-qoder，消除与 logic-list-spec v2.0 的撞名。
 
 > 排除项（有意不收录）：tabbit（符号链接）、CuINiOrR（与 prd-auto-generator 重复）。~~admin-ui-spec、logic-list-spec v2.0~~ 已于 2026-10-26 经用户确认收录。
+> 🗺️ 生命周期分级 / 弃用裁定 / 待办路线：见 [ROADMAP.md](ROADMAP.md)。
 
 ## 技能总览（75 项）
 
