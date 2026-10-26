@@ -53,7 +53,7 @@
 | archive/logic-list-spec-qoder | ⚰️ logic-list-spec-qoder | 1.0 | 既有 | **已弃用（2026-10-26 裁定）**：被 logic-list-spec v2.0 Extract 模式取代 |
 | meeting-prd-analyzer | meeting-prd-analyzer | — | 既有 | 会议纪要→需求变更抽取/PRD 更新 |
 | mermaid-diagram-specialist | mermaid-diagram-specialist | — | agents端 | Mermaid 流程图/时序图/ERD/架构图专家（mermaid-expert 旧壳的改名正式版） |
-| openclaw-install | openclaw-install | — | 既有 | Windows 上安装 OpenClaw 多渠道 AI 网关 |
+| archive/openclaw-install | ⚰️ openclaw-install | — | 既有 | **已弃用（2026-10-26 二次裁定，推翻保留）**：一次性安装器不再需要 |
 | operation-manual | operation-manual | — | 既有 | 软著操作手册 docx 生成（截图＋python-docx） |
 | paseo | paseo | — | claudecode | Paseo 产品参考（项目/工作区/代理/调度） |
 | paseo-advisor | paseo-advisor | — | claudecode | 单代理顾问：第二意见 |
