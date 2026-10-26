@@ -52,7 +52,7 @@ import tempfile
 import zipfile
 
 MAX_DESCRIPTION_CHARS = 1024   # installer's documented cap on the folded description
-NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")   # kebab-case
+NAME_RE = re.compile(r"^(?:[a-z0-9]+(-[a-z0-9]+)*|PDM\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*(（[^（）]+）)?)$")   # kebab-case, or the family convention "PDM.Xxx-Yyy（中文短名）" (dotted namespace + mixed-case segments + optional CJK parenthetical; 2026-10-06 family naming decision, see 溯源与同步.md)
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
 
 # --- Core-size ratchet -------------------------------------------------------
@@ -454,7 +454,7 @@ def check_dir(skill_dir, fails):
         fails.append("frontmatter: `name` missing")
     elif not NAME_RE.match(name):
         fails.append(f"frontmatter: `name` not kebab-case: {name!r}")
-    elif name != skill_dir.name:
+    elif re.sub(r"（[^（）]+）$", "", name) != skill_dir.name:   # family convention: the CJK parenthetical is name-only, the directory carries the bare form
         fails.append(f"frontmatter: `name` {name!r} != directory {skill_dir.name!r}")
     desc = folded_description(fm)
     # A space before `#` starts a YAML comment, so a plain (unquoted) value

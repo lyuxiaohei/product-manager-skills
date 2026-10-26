@@ -1,8 +1,8 @@
 ---
 name: PDM.Skill-Evolve
-core_max_lines: 684
-version: 3.6.2
-description: Monitors task execution for skill improvement opportunities. Use during ANY multi-step task or work session. Captures patterns, user corrections and methodology worth preserving as reusable skills; writes observation files to the workspace. Invoke before the FIRST tool call of any session - pair with a CLAUDE.md instruction or session-start hook (description matching alone is not enforceable). 中文触发词：技能进化、技能自动进化、技能迭代、技能观察员、观察日志、skill observations、One Skill to Rule Them All、提示词记录、提示词库、prompt capture、prompt library
+core_max_lines: 624
+version: 3.6.3
+description: Monitors task execution for skill improvement opportunities. Use during ANY multi-step task or work session. Captures patterns, user corrections and methodology worth preserving as reusable skills; writes observation files to the workspace. Invoke before the FIRST tool call of any session - pair with a CLAUDE.md instruction or session-start hook (description matching alone is not enforceable). 中文触发词：技能进化、技能自动进化、技能迭代、技能观察员、观察日志、skill observations、One Skill to Rule Them All、提示词记录、提示词库、提示词统计、技能用量、prompt capture、prompt library、prompt stats
 
 license: CC-BY-4.0
 metadata:
@@ -460,7 +460,7 @@ section or rule; for new skills, scope and key components.]
 ## 提示词记录（融合自 prompt-capture · 2026-10-10）
 
 一个全局 UserPromptSubmit 钩子把每条提交的提示词追加到
-`<项目>/.prompts/<日期-项目-会话短id>.md`（每会话一文件、逐条时间戳；2026-10-10 v3 起 `.prompts` 锚定项目根——`.prompts/.root` 哨兵＋向上查找，不随会话内 shell cd 漂移，历史散落记录已归并至各项目根）。
+`<项目>/.prompts/<日期-项目-会话短id>.md`（每会话一文件、逐条时间戳；2026-10-10 v3 起 `.prompts` 锚定项目根——`.prompts/.root` 哨兵＋向上查找，不随会话内 shell cd 漂移，历史散落记录已归并至各项目根；2026-10-20 起（#0046）向上查找在任何含 `.prompts` 的最近一层截断——哨兵有无均可，无哨兵的容器在首次写入时补建，攀升绝不越过已有容器而在更深处另起新容器）。
 它是本技能观察体系的原始证据流，与观察条目分工：提示词记录「用户说了
 什么」（全量、被动），观察条目提炼「什么值得改」（信号、主动）。
 
@@ -472,6 +472,15 @@ section or rule; for new skills, scope and key components.]
 **降噪与脱敏**：短确认（如「继续」）与裸斜杠命令不记；sk-/gh_/bearer/
 key=value/bigmodel 类令牌写入前替换。纪律与保密层级一致：.prompts/
 含项目原话，外发前脱敏。
+
+**用量报表工作流（#0009）**：何时跑——用户问提示词统计／技能用量，或
+周期评审第 1 步。对每个含近期 `.prompts` 的项目目录运行
+`node <技能>/scripts/build-library.js <项目目录>`——参数是**项目目录本身**，
+不是 `.prompts` 子目录（缺省才落到当前目录）。脚本聚合该项目全部会话
+文件，做近重复聚类并按 PRD/建模/原型/调试/工具/协作自动打标签，在该
+项目 `.prompts/` 下生成/更新 `library.md`。读法：大簇＝同一请求形态反复
+出现（`proposes_skill` 候选或既有技能的摩擦信号）；标签分布＝该项目
+任务类型构成；终端输出的簇数/近重复数可作评审呈报的量化开头。
 
 **观察联动（评审必做）**：周期评审交叉核对观察条目时，全文检索本周期
 各会话的 .prompts/ 文件——同一请求形态反复出现＝`proposes_skill` 的

@@ -119,8 +119,12 @@ function sanitizeName(s) {
 const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // v3: resolve the project root. Candidates in priority order (host-declared
-// workspace first); from each, climb upward to the nearest ancestor whose
-// .prompts/ carries the sentinel. If nothing is anchored anywhere, the first
+// workspace first); from each, climb upward to the nearest ancestor that
+// already holds a .prompts/ - sentinel-bearing (exact anchor) or sentinel-less
+// alike (#0046: an existing .prompts/ marks the nearest container; climbing
+// past it and anchoring a fresh .prompts/ at a deeper fallback hijacked one
+// session per subdirectory). A sentinel-less container gets its sentinel
+// dropped on first write. If no ancestor has .prompts/ at all, the first
 // usable candidate anchors the project (sentinel is dropped on first write).
 function resolveRoot(data) {
   const candidates = [];
@@ -132,6 +136,7 @@ function resolveRoot(data) {
     let cur = path.resolve(start);
     for (let i = 0; i < MAX_CLIMB; i++) {
       if (fs.existsSync(path.join(cur, '.prompts', ROOT_SENTINEL))) return cur;
+      if (fs.existsSync(path.join(cur, '.prompts'))) return cur;   // nearest container, sentinel optional (#0046)
       const parent = path.dirname(cur);
       if (parent === cur) break;   // reached drive root
       cur = parent;
