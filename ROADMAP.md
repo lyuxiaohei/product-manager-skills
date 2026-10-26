@@ -22,22 +22,22 @@
 | **PDM 链（权威源驱动）** | PDM.* 16 个 | 修订从 A34 出发，仓库是快照 |
 | **活跃自建** | 原型标注、prototype-design、logic-list-spec、 competitive-analysis、strategy-and-competitive-analysis、meeting-prd-analyzer、prd-auto-generator、jd-crawler、简历四件套（k3-resume-replica/resume-tailor/resume-bullet-writer/creative-portfolio-resume）、admin-ui-spec、ui-ux-pro-max 等 | 正常迭代 |
 | **官方/产品快照** | docx、xlsx、pdf 类、canvas-design、brand-guidelines、algorithmic-art、doc-coauthoring、find-skills、frontend-design、web-design-guidelines、humanizer(-zh)、paseo 系列 | 随上游更新，仓库仅存档 |
-| **稳定维护（低频有效）** | idea-refine、ppt-master、operation-manual、software-copyright-docs、statusline-customizer、file-organizer、domain-modeling、prototype-domain-modeling、ui-consistency-check、mermaid-diagram-specialist、video-to-markdown、git-push（现名"散落技能文件"） | mtime 老但无被取代证据 |
-| **🔴 拟弃用·待确认** | 见 §2-A | 有实质证据，等一句裁定 |
-| **⚰️ 已弃用·留档** | prompt-capture | 2026-10-10 功能已并入 PDM.Skill-Evolve（提示词记录章节），仅留档 |
+| **稳定维护（低频有效）** | idea-refine、ppt-master、operation-manual、software-copyright-docs、statusline-customizer、file-organizer、domain-modeling、prototype-domain-modeling、ui-consistency-check、mermaid-diagram-specialist、video-to-markdown、git-push（现名"散落技能文件"）、openclaw-install（2026-10-26 裁定保留，备换机重装） | mtime 老但无被取代证据 |
+| **🔴 拟弃用·待确认** | （无——2026-10-26 三项已裁定完毕，见 §2-A） | 有实质证据，等一句裁定 |
+| **⚰️ 已弃用·归档** | prompt-capture、`archive/logic-list-spec-qoder`、`archive/context-restore` | 见 §2-A 裁定记录 |
 | **📦 素材/散件（非技能）** | SKU批量填充弹窗（PNG）、knowledge-compiler.skill（zip 包）、baoyu-format-markdown（嵌套壳）、grill-me（嵌套壳） | 待整理，不安装 |
 
 ## 2. 待办路线
 
-### A. 近期 · 弃用裁定（每项一句"留/弃"即可）
+### A. 近期 · 弃用裁定（✅ 2026-10-26 三项已裁定）
 
-| 技能 | 弃用证据 | 裁定问题 |
+| 技能 | 弃用证据 | 裁定 |
 |---|---|---|
-| `logic-list-spec-qoder` | v1.0 HTML 源码版；logic-list-spec v2.0 的 **Extract 模式**就是"源码逆向生成清单"，功能被覆盖 | Extract 模式实测能否出同等清单？能 → 归档本目录 |
-| `context-restore` | 依赖 `/context-save`（gstack 系），**四位置均无 context-save**，孤儿技能 | 还会用 gstack 工作流吗？不会 → 归档 |
-| `openclaw-install` | 一次性安装器（2026-08 后未动），装完即闲 | 还会重装/换机部署 OpenClaw 吗？不会 → 归档 |
+| `logic-list-spec-qoder` | v1.0 HTML 源码版；logic-list-spec v2.0 的 **Extract 模式**功能覆盖 | ✅ 弃——已移入 `archive/` |
+| `context-restore` | 依赖 `/context-save`（gstack 系），四位置均无，孤儿 | ✅ 弃（gstack 不再使用）——已移入 `archive/` |
+| `openclaw-install` | 一次性安装器 | ✅ **留**（换机重装还会用）——移入「稳定维护」级 |
 
-裁定后处置：移入仓库 `archive/` 目录（git rm 由道远手动执行），端上同步移除。
+处置约定：仓库侧 `git mv` 进 `archive/`（内容保留、历史保留）；**三端安装副本的移除由道远手动删**（见 §2-B）。
 
 ### B. 近期 · 手动删除清单（旧壳，内容已有取代版）
 
@@ -47,6 +47,7 @@
 - [ ] 仓库根 `.embedded-git-backup-logic-list-spec-qoder\`（内嵌 .git 备份）
 - [ ] `.claude\skills\CuINiOrR\`（prd-auto-generator 重复死壳）
 - [ ] 可选：`.claude\skills\docx\scripts\office\helpers\__pycache__`
+- [ ] 弃用技能的端上副本（三个位置各两处，2026-10-26 裁定弃）：`context-restore\`、`logic-list-spec-qoder\`——在 `~/.claude/skills`、`~/.zcode/skills`、`~/.agents/skills` 下手动删除
 
 ### C. 中期 · 整理
 

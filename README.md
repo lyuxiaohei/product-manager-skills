@@ -33,7 +33,7 @@
 | brand-guidelines | brand-guidelines | — | claudecode | Anthropic 官方品牌色与排版规范 |
 | canvas-design | canvas-design | — | claudecode | 海报/静态视觉设计（png/pdf） |
 | competitive-analysis | competitive-analysis | — | 既有 | S2B2C/供应链/电商竞品分析 |
-| context-restore | context-restore | 1.0.0 | 既有 | 恢复 /context-save 保存的工作上下文 |
+| archive/context-restore | ⚰️ context-restore | 1.0.0 | 既有 | **已弃用（2026-10-26 裁定）**：孤儿技能，依赖的 /context-save（gstack）已弃用 |
 | cover-letter-generator | cover-letter-generator | — | zcode | 求职信个性化生成 |
 | creative-portfolio-resume | creative-portfolio-resume | — | zcode | 创意岗位简历（视觉设计＋ATS 兼容） |
 | diagram-design | diagram-design | 2.5 | 修正自 zcode | 品牌化架构/流程/ER 等图表（HTML/SVG/PNG） |
@@ -50,7 +50,7 @@
 | jd-crawler | jd-crawler | 0.1.1 | zcode | 猎聘/Boss直聘 JD 批量爬取落库 |
 | k3-resume-replica | K3简历复刻 | — | zcode | PDF 投递版简历 100% 复刻为单文件 HTML |
 | logic-list-spec | logic-list-spec | 2.0 | zcode | 业务逻辑清单生成（Draft 模式，从需求正文起草） |
-| logic-list-spec-qoder | logic-list-spec-qoder | 1.0 | 既有 | Qoder 端业务逻辑清单生成（从项目 HTML 源码按版本范围；2026-10-26 改名去撞名） |
+| archive/logic-list-spec-qoder | ⚰️ logic-list-spec-qoder | 1.0 | 既有 | **已弃用（2026-10-26 裁定）**：被 logic-list-spec v2.0 Extract 模式取代 |
 | meeting-prd-analyzer | meeting-prd-analyzer | — | 既有 | 会议纪要→需求变更抽取/PRD 更新 |
 | mermaid-diagram-specialist | mermaid-diagram-specialist | — | agents端 | Mermaid 流程图/时序图/ERD/架构图专家（mermaid-expert 旧壳的改名正式版） |
 | openclaw-install | openclaw-install | — | 既有 | Windows 上安装 OpenClaw 多渠道 AI 网关 |
