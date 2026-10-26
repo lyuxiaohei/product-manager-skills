@@ -39,15 +39,11 @@
 
 处置约定：仓库侧 `git mv` 进 `archive/`（内容保留、历史保留）；**三端安装副本的移除由道远手动删**（见 §2-B）。
 
-### B. 近期 · 手动删除清单（旧壳，内容已有取代版）
+### B. ✅ 手动删除清单（2026-10-26 已全部执行）
 
-- [ ] 仓库根 `mermaid-expert\`（旧名壳 → mermaid-diagram-specialist）
-- [ ] 仓库根 `video-to-markdown-download\`（04-10 旧版壳）
-- [ ] 仓库根 `product-manager-toolkit.broken-husk\`（扶正后空壳）
-- [ ] 仓库根 `.embedded-git-backup-logic-list-spec-qoder\`（内嵌 .git 备份）
-- [ ] `.claude\skills\CuINiOrR\`（prd-auto-generator 重复死壳）
-- [ ] 可选：`.claude\skills\docx\scripts\office\helpers\__pycache__`
-- [ ] 弃用技能的端上副本（三个位置各三处，2026-10-26 裁定弃）：`context-restore\`、`logic-list-spec-qoder\`、`openclaw-install\`——在 `~/.claude/skills`、`~/.zcode/skills`、`~/.agents/skills` 下手动删除
+15 项已删除（仓库旧壳 4、.claude 5、.zcode 3、.agents 3），**删除前逐项备份并核验文件数一致**：
+备份位于 `C:\Users\Administrator\.zcode\deletion-backups\2026-10-26\`（含 MANIFEST.txt；还原＝从对应子目录 cp 回原位）。
+删除后基线：仓库可发现 66，三端各 65（合计 195）。保留未删：`散落技能文件\` 等 5 个待整理素材（见 §1 素材行与 §2-C）。
 
 ### C. 中期 · 整理
 
