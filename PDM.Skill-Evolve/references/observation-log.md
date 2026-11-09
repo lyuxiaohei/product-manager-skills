@@ -1394,3 +1394,59 @@ older_than_today() {   # $1 = a YYYY-MM-DD date
 后续层已拥有的交付决定（"收件人就在眼前，不必发了"）：点火，让
 拥有它的层去抑制——被抑制的发送在工具记录里留下痕迹，没发的
 什么也不留。
+
+---
+
+## id 推导片段——从核心移入（3.7.2）
+
+**加载触发条件（必读）：**需要推导 id 或创建观察条目时。SKILL.md 核心只留三值取最大的规则与本指针；此处是片段唯一权威承载——**在能运行辅助脚本的地方，`bash scripts/new-observation.sh <slug>` 执行它并打印创建的路径，是唯一的写入路径**；仅在没有脚本运行环境的场合，从下面原样复制执行，绝不凭记忆重打。片段按写入次序内嵌归档清扫（见核心“写入时归档”），各道防线（ARCHIVAL SWEEP BROKEN / ID COMMAND BROKEN / COLLISSION / noclobber）触发时的处置见本文件对应章节。
+
+```bash
+d="C:/Users/Administrator/.zcode/skill-observations/observation-log"   # the pinned workspace path, never relative to the cwd; it may contain a space, so keep it quoted; bash, not sh
+today=$(date +%F)          # archival rides inside this command (see below):
+n_files=$(find "$d" -maxdepth 1 -name '[0-9]*.md' ! -empty | wc -l | tr -d ' ')   # a zero-byte file gives awk no line to count
+seen=$(cd "$d" && awk 'FNR==1 {n++; nextfile} END {print n+0}' [0-9]*.md 2>/dev/null)   # files the sweep's glob reaches, counted apart from the sweep
+[ "$n_files" -gt 0 ] && [ "${seen:-0}" -eq 0 ] && { echo "ARCHIVAL SWEEP BROKEN — $n_files files present, 0 examined"; exit 1; }
+( cd "$d" && LC_ALL=C awk -v today="$today" 'FNR==1 {st=""; r=""; sub(/^\357\273\277/, ""); fm=/^---[[:space:]]*$/; if (!fm) nextfile; next}
+    fm && /^---[[:space:]]*$/ {if (st ~ /^(actioned|declined|superseded)$/ && r ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/ && r < today) print FILENAME; nextfile}
+    fm && /^status:/ {st=$2}
+    fm && /^resolved:/ {r=$2}' [0-9]*.md 2>/dev/null | while IFS= read -r x; do mv -n "$x" archive/ 2>/dev/null; if [ -e "$x" ]; then echo "NOTE: $x not archived — archive/$x exists or the move failed"; fi; done )   # one awk for the set, one mv per stale resolved file, never over an archived one; bash
+floor=$(sed '1!d; s/[^0-9]//g' "$d/archive/.id-floor" 2>/dev/null); floor=$((10#${floor:-0}))   # digits only: a CRLF or padded floor still reads
+ids=$(for p in "$d"/[0-9]*.md "$d"/archive/[0-9]*.md; do [ -e "$p" ] && printf '%s\n' "${p##*/}"; done | grep -oE '^[0-9]+')   # globs and builtins: no `ls` a profile alias can rebind
+[ "$(printf '%s' "$ids" | grep -c .)" -eq "$(find "$d" "$d/archive" -maxdepth 1 -name '[0-9]*.md' | wc -l)" ] || { echo "ID COMMAND BROKEN — the listing and find disagree on the prefixed files"; exit 1; }
+hi=$(printf '%s\n' "$ids" | sort -n | tail -1); hi=$((10#${hi:-0}))   # from the files alone; 10#: a zero-padded prefix is not octal
+[ "$hi" -lt "$floor" ] && echo "NOTE: highest file id $hi is below .id-floor $floor — ids issued without a file; the new id goes above the floor"
+next_id=$(( (hi > floor ? hi : floor) + 1 ))      # never below the floor, whatever the listing saw
+f="$d/$(printf '%04d' "$next_id")-<slug>.md"      # the target path, built from the id just derived
+[ -n "$(find "$d" -maxdepth 2 -name "$(printf '%04d' "$next_id")-*.md")" ] && { echo "COLLISION — id $next_id already used; re-derive"; exit 1; }   # guard the id PREFIX across active + archive, not the path
+(set -C; : > "$f") || exit 1                        # noclobber: create, never truncate an existing file
+printf '%s\n' "$next_id" > "$d/archive/.id-floor"   # AFTER the create: an id check that writes no file never moves the floor
+```
+
+---
+
+## id 推导片段——从核心移入（3.7.2）
+
+**加载触发条件（必读）：**需要推导 id 或创建观察条目时。SKILL.md 核心只留三值取最大的规则与本指针；此处是片段唯一权威承载——在能运行辅助脚本的地方，`bash scripts/new-observation.sh <slug>` 执行它并打印创建的路径，是唯一的写入路径；仅在没有脚本运行环境的场合，从下面原样复制执行，绝不凭记忆重打。片段按写入次序内嵌归档清扫（见核心“写入时归档”），各道防线（ARCHIVAL SWEEP BROKEN / ID COMMAND BROKEN / COLLISION / noclobber）触发时的处置见本文件对应章节。
+
+```bash
+d="C:/Users/Administrator/.zcode/skill-observations/observation-log"   # the pinned workspace path, never relative to the cwd; it may contain a space, so keep it quoted; bash, not sh
+today=$(date +%F)          # archival rides inside this command (see below):
+n_files=$(find "$d" -maxdepth 1 -name '[0-9]*.md' ! -empty | wc -l | tr -d ' ')   # a zero-byte file gives awk no line to count
+seen=$(cd "$d" && awk 'FNR==1 {n++; nextfile} END {print n+0}' [0-9]*.md 2>/dev/null)   # files the sweep's glob reaches, counted apart from the sweep
+[ "$n_files" -gt 0 ] && [ "${seen:-0}" -eq 0 ] && { echo "ARCHIVAL SWEEP BROKEN — $n_files files present, 0 examined"; exit 1; }
+( cd "$d" && LC_ALL=C awk -v today="$today" 'FNR==1 {st=""; r=""; sub(/^\357\273\277/, ""); fm=/^---[[:space:]]*$/; if (!fm) nextfile; next}
+    fm && /^---[[:space:]]*$/ {if (st ~ /^(actioned|declined|superseded)$/ && r ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/ && r < today) print FILENAME; nextfile}
+    fm && /^status:/ {st=$2}
+    fm && /^resolved:/ {r=$2}' [0-9]*.md 2>/dev/null | while IFS= read -r x; do mv -n "$x" archive/ 2>/dev/null; if [ -e "$x" ]; then echo "NOTE: $x not archived — archive/$x exists or the move failed"; fi; done )   # one awk for the set, one mv per stale resolved file, never over an archived one; bash
+floor=$(sed '1!d; s/[^0-9]//g' "$d/archive/.id-floor" 2>/dev/null); floor=$((10#${floor:-0}))   # digits only: a CRLF or padded floor still reads
+ids=$(for p in "$d"/[0-9]*.md "$d"/archive/[0-9]*.md; do [ -e "$p" ] && printf '%s\n' "${p##*/}"; done | grep -oE '^[0-9]+')   # globs and builtins: no `ls` a profile alias can rebind
+[ "$(printf '%s' "$ids" | grep -c .)" -eq "$(find "$d" "$d/archive" -maxdepth 1 -name '[0-9]*.md' | wc -l)" ] || { echo "ID COMMAND BROKEN — the listing and find disagree on the prefixed files"; exit 1; }
+hi=$(printf '%s\n' "$ids" | sort -n | tail -1); hi=$((10#${hi:-0}))   # from the files alone; 10#: a zero-padded prefix is not octal
+[ "$hi" -lt "$floor" ] && echo "NOTE: highest file id $hi is below .id-floor $floor — ids issued without a file; the new id goes above the floor"
+next_id=$(( (hi > floor ? hi : floor) + 1 ))      # never below the floor, whatever the listing saw
+f="$d/$(printf '%04d' "$next_id")-<slug>.md"      # the target path, built from the id just derived
+[ -n "$(find "$d" -maxdepth 2 -name "$(printf '%04d' "$next_id")-*.md")" ] && { echo "COLLISION — id $next_id already used; re-derive"; exit 1; }   # guard the id PREFIX across active + archive, not the path
+(set -C; : > "$f") || exit 1                        # noclobber: create, never truncate an existing file
+printf '%s\n' "$next_id" > "$d/archive/.id-floor"   # AFTER the create: an id check that writes no file never moves the floor
+```

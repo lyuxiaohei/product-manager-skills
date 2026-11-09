@@ -1,7 +1,7 @@
 ---
 name: PDM.Skill-Evolve
-core_max_lines: 624
-version: 3.7.1
+core_max_lines: 587
+version: 3.7.2
 description: Monitors task execution for skill improvement opportunities. Use during ANY multi-step task or work session. Captures patterns, user corrections and methodology worth preserving as reusable skills; writes observation files to the workspace. Invoke before the FIRST tool call of any session - pair with a CLAUDE.md instruction or session-start hook (description matching alone is not enforceable). 中文触发词：技能进化、技能自动进化、技能迭代、技能观察员、观察日志、skill observations、One Skill to Rule Them All、提示词记录、提示词库、提示词统计、技能用量、prompt capture、prompt library、prompt stats
 
 license: CC-BY-4.0
@@ -310,29 +310,12 @@ worktree、一个临时克隆——会随检出目录一起被拆除，并把观
 签发过的最大 id——每当你签发超过它的 id 就更新它，这样当活跃目录为
 空时计数器绝不会从 1 重新开始）。同一条命令会先用 `mv` 把陈旧的已解决
 文件从 `observation-log/` 移入 `archive/`——归档是推导 id 的副作用，
-不是一项独立职责（见“写入时归档”）：
-
-```bash
-d="C:/Users/Administrator/.zcode/skill-observations/observation-log"   # the pinned workspace path, never relative to the cwd; it may contain a space, so keep it quoted; bash, not sh
-today=$(date +%F)          # archival rides inside this command (see below):
-n_files=$(find "$d" -maxdepth 1 -name '[0-9]*.md' ! -empty | wc -l | tr -d ' ')   # a zero-byte file gives awk no line to count
-seen=$(cd "$d" && awk 'FNR==1 {n++; nextfile} END {print n+0}' [0-9]*.md 2>/dev/null)   # files the sweep's glob reaches, counted apart from the sweep
-[ "$n_files" -gt 0 ] && [ "${seen:-0}" -eq 0 ] && { echo "ARCHIVAL SWEEP BROKEN — $n_files files present, 0 examined"; exit 1; }
-( cd "$d" && LC_ALL=C awk -v today="$today" 'FNR==1 {st=""; r=""; sub(/^\357\273\277/, ""); fm=/^---[[:space:]]*$/; if (!fm) nextfile; next}
-    fm && /^---[[:space:]]*$/ {if (st ~ /^(actioned|declined|superseded)$/ && r ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/ && r < today) print FILENAME; nextfile}
-    fm && /^status:/ {st=$2}
-    fm && /^resolved:/ {r=$2}' [0-9]*.md 2>/dev/null | while IFS= read -r x; do mv -n "$x" archive/ 2>/dev/null; if [ -e "$x" ]; then echo "NOTE: $x not archived — archive/$x exists or the move failed"; fi; done )   # one awk for the set, one mv per stale resolved file, never over an archived one; bash
-floor=$(sed '1!d; s/[^0-9]//g' "$d/archive/.id-floor" 2>/dev/null); floor=$((10#${floor:-0}))   # digits only: a CRLF or padded floor still reads
-ids=$(for p in "$d"/[0-9]*.md "$d"/archive/[0-9]*.md; do [ -e "$p" ] && printf '%s\n' "${p##*/}"; done | grep -oE '^[0-9]+')   # globs and builtins: no `ls` a profile alias can rebind
-[ "$(printf '%s' "$ids" | grep -c .)" -eq "$(find "$d" "$d/archive" -maxdepth 1 -name '[0-9]*.md' | wc -l)" ] || { echo "ID COMMAND BROKEN — the listing and find disagree on the prefixed files"; exit 1; }
-hi=$(printf '%s\n' "$ids" | sort -n | tail -1); hi=$((10#${hi:-0}))   # from the files alone; 10#: a zero-padded prefix is not octal
-[ "$hi" -lt "$floor" ] && echo "NOTE: highest file id $hi is below .id-floor $floor — ids issued without a file; the new id goes above the floor"
-next_id=$(( (hi > floor ? hi : floor) + 1 ))      # never below the floor, whatever the listing saw
-f="$d/$(printf '%04d' "$next_id")-<slug>.md"      # the target path, built from the id just derived
-[ -n "$(find "$d" -maxdepth 2 -name "$(printf '%04d' "$next_id")-*.md")" ] && { echo "COLLISION — id $next_id already used; re-derive"; exit 1; }   # guard the id PREFIX across active + archive, not the path
-(set -C; : > "$f") || exit 1                        # noclobber: create, never truncate an existing file
-printf '%s\n' "$next_id" > "$d/archive/.id-floor"   # AFTER the create: an id check that writes no file never moves the floor
-```
+不是一项独立职责（见“写入时归档”）。片段本体（含全部防线：清扫
+计数、列表核验、前缀碰撞守卫、noclobber 创建、floor 写入时序）逐字
+收在 `references/observation-log.md`（“id 推导片段——从核心移入”）：
+**在能运行辅助脚本的地方，`bash scripts/new-observation.sh <slug>`
+执行它并打印创建的路径，是唯一的写入路径**；仅在没有脚本运行环境的
+场合，从参考件原样复制片段执行，绝不凭记忆重打。
 
 清单防线区分“日志为零”与“我读不到日志”，清扫计数对归档循环做同样的
 事，前缀防线拒绝任何 slug 之下已被占用的编号，`noclobber` 创建拒绝
@@ -460,32 +443,12 @@ section or rule; for new skills, scope and key components.]
 ## 提示词记录（融合自 prompt-capture · 2026-10-10）
 
 一个全局 UserPromptSubmit 钩子把每条提交的提示词追加到
-`<项目>/.prompts/<日期-项目-会话短id>.md`（每会话一文件、逐条时间戳；2026-10-10 v3 起 `.prompts` 锚定项目根——`.prompts/.root` 哨兵＋向上查找，不随会话内 shell cd 漂移，历史散落记录已归并至各项目根；2026-10-20 起（#0046）向上查找在任何含 `.prompts` 的最近一层截断——哨兵有无均可，无哨兵的容器在首次写入时补建，攀升绝不越过已有容器而在更深处另起新容器）。
-它是本技能观察体系的原始证据流，与观察条目分工：提示词记录「用户说了
-什么」（全量、被动），观察条目提炼「什么值得改」（信号、主动）。
-
-**运行时与权威源**：钩子命令指向 `C:/Users/Administrator/.claude/hooks/save-prompt.js`
-（ZCode 与 Claude Code 两侧 config 均已注册）；该脚本的权威源与配套的
-`build-library.js`（近重复聚类＋自动标签 PRD/建模/原型/调试/工具/协作＋
-生成 library.md）在本技能 `scripts/` 下。改脚本改权威源，hooks/ 是部署副本。
-
-**降噪与脱敏**：短确认（如「继续」）与裸斜杠命令不记；sk-/gh_/bearer/
-key=value/bigmodel 类令牌写入前替换。纪律与保密层级一致：.prompts/
-含项目原话，外发前脱敏。
-
-**用量报表工作流（#0009）**：何时跑——用户问提示词统计／技能用量，或
-周期评审第 1 步。对每个含近期 `.prompts` 的项目目录运行
-`node <技能>/scripts/build-library.js <项目目录>`——参数是**项目目录本身**，
-不是 `.prompts` 子目录（缺省才落到当前目录）。脚本聚合该项目全部会话
-文件，做近重复聚类并按 PRD/建模/原型/调试/工具/协作自动打标签，在该
-项目 `.prompts/` 下生成/更新 `library.md`。读法：大簇＝同一请求形态反复
-出现（`proposes_skill` 候选或既有技能的摩擦信号）；标签分布＝该项目
-任务类型构成；终端输出的簇数/近重复数可作评审呈报的量化开头。
-
-**观察联动（评审必做）**：周期评审交叉核对观察条目时，全文检索本周期
-各会话的 .prompts/ 文件——同一请求形态反复出现＝`proposes_skill` 的
-新技能候选或既有技能的摩擦信号；写观察条目时可直接引用 .prompts/
-路径入 `reference:` 字段作为原始证据。
+`<项目>/.prompts/`（每会话一文件、逐条时间戳），与本技能的观察条目
+分工：提示词记录「用户说了什么」（全量、被动），观察条目提炼「什么
+值得改」（信号、主动）。钩子部署位置、权威源归属、降噪与脱敏纪律、
+用量报表工作流（#0009）与评审联动的完整规则在
+`references/prompt-capture.md`——**在用户问提示词统计／技能用量，
+或周期评审第 1 步之前加载它**。
 
 ## 写入时归档
 
