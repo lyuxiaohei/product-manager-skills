@@ -1,7 +1,7 @@
 ---
 name: PDM.Skill-Evolve
 core_max_lines: 624
-version: 3.6.3
+version: 3.7.1
 description: Monitors task execution for skill improvement opportunities. Use during ANY multi-step task or work session. Captures patterns, user corrections and methodology worth preserving as reusable skills; writes observation files to the workspace. Invoke before the FIRST tool call of any session - pair with a CLAUDE.md instruction or session-start hook (description matching alone is not enforceable). 中文触发词：技能进化、技能自动进化、技能迭代、技能观察员、观察日志、skill observations、One Skill to Rule Them All、提示词记录、提示词库、提示词统计、技能用量、prompt capture、prompt library、prompt stats
 
 license: CC-BY-4.0

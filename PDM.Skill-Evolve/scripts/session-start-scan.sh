@@ -27,6 +27,35 @@
 #   checkpoint line above it already ran) — a refused or failed print is
 #   never an empty log
 #
+# --- cache (2026-11-06 #0191; 2026-11-09 calendar-day rework) ------------------
+# The full scan opens every file several times (six find -exec awk passes plus
+# the content print); on Windows/MSYS that measured 5.4s for ~140 entries,
+# almost all of it sys-time file-open overhead. The scan output has no
+# date-dependent lines, so its stdout is cached at skill-observations/.scan-cache
+# and replayed verbatim; the checkpoints.log line (date-stamped) is still
+# appended fresh — a hit changes when the scan runs, never what it reports.
+#
+# Freshness is CALENDAR-DAY + COUNT (2026-11-09, user decision: scan once a
+# day, store the count and the date — the first cut keyed a name:mtime
+# inventory hash, which every day's own writes invalidated, so the cache
+# rarely survived to a second session). The cache is written under today's
+# date and hits again only on the SAME date, and only while the active
+# directory's numbered-file count is unchanged. Count is one maxdepth-1
+# directory walk — cheap on every host, needs no GNU find -printf, so stock
+# macOS gets the cache too (where the inventory-hash cut always ran full).
+# The count key catches the same-day mutations that matter: a NEW entry
+# (the duplicate-check index must see it — one full re-scan, then the cache
+# is fresh again) and an EMPTIED directory (a stop signal, never a reason
+# to replay a stale payload; a zero-byte entry rides the count like any
+# other file, so LOST ENTRIES is reported by each day's first full scan and
+# rides that day's replayed payload until fixed).
+# Everything else — edits to existing entries, archive moves, sibling-log
+# changes — rides one day of staleness by design: the title/skill fields
+# the duplicate check reads rarely change by edit, and SKILL.md's
+# restatement check keeps its find+grep fallback for exactly this gap.
+# Bump the `v2` prefix in BOTH the hit check and the write below if the
+# printed sections or the cache layout ever change shape.
+
 # This is the inline scan SKILL.md carried in step 2, unchanged in what it
 # runs and prints, moved into a file for two reasons. A reader can review it
 # here, line by line, instead of as one block of awk regexes inside a numbered
@@ -57,6 +86,39 @@ esac
 # Every expansion of $root, $d and $p stays double-quoted: the pinned path
 # routinely contains a space.
 d="$root/skill-observations/observation-log"
+
+# --- cache: calendar-day + count key, then the hit path ------------------------
+# The count names every numbered file, zero-byte ones included, and the
+# write below reuses this same $n_all — a hit key and its write key must
+# come from one command, or the cache never matches itself. The meta line's
+# files count stays ! -empty on purpose: the key counts directory entries,
+# the report counts what can parse.
+cache="$root/skill-observations/.scan-cache"
+# glob counting, not find|wc: the count runs on EVERY start, and two spawned
+# processes per count is measurable on Windows — the shell's own directory
+# read does it in-process and matches find's [0-9]*.md name class exactly
+# (neither form sees dotfiles; both see a directory named like an entry).
+n_all=0; for f in "$d"/[0-9]*.md; do [ -e "$f" ] && n_all=$((n_all+1)); done
+if [ -r "$cache" ]; then
+  set -- $(sed -n '1,2p' "$cache")   # line1 "v2 <date> <count>" + line2 "meta <n> <parsed> <pr>": 7 words
+  if [ "$#" -eq 7 ] && [ "$1 $2 $3" = "v2 $(date +%F) $n_all" ] && grep -q '^$' "$cache"; then
+    awk 'f; /^$/{f=1}' "$cache"   # payload = everything after the blank separator
+    printf '%s [%s] session-start scan: files=%s parsed=%s principles=%s\n' \
+      "$(date '+%F %H:%M')" "${PWD##*/}" "$5" "$6" "$7" \
+      >> "$root/skill-observations/checkpoints.log"
+    exit 0
+  fi
+fi
+
+# --- full scan: body captured to a temp, replayed verbatim, cached on success -
+# The body between the wrapper parens below is the original scan, byte-for-byte
+# in what it computes and prints. Its `exit 1` (SCAN COMMAND BROKEN) exits only
+# the subshell: the captured text is still printed, no cache is written, and
+# the status propagates. The meta line (n parsed pr) is written to $mTmp inside
+# the body so the cache header can carry it without reparsing stdout.
+tmp=$(mktemp) || exit 2
+mTmp=$(mktemp) || exit 2
+(
 
 # --- counts -------------------------------------------------------------------
 # n: numbered, non-empty files — what the parse can read. Counted from the
@@ -134,6 +196,7 @@ printf 'files: %s  parsed: %s  suspect (awk, a floor): %s  archive-suspect: %s\n
 # --- the trace: one line per session, with date, time and source -------------
 printf '%s [%s] session-start scan: files=%s parsed=%s principles=%s\n' "$(date '+%F %H:%M')" "${PWD##*/}" "$n" "$parsed" "$pr" \
   >> "$root/skill-observations/checkpoints.log"
+printf 'meta %s %s %s\n' "$n" "$parsed" "$pr" > "$mTmp"
 
 # --- sibling logs: every observation log up to three levels under the parent -
 # A report, never a reason to consolidate from here.
@@ -151,3 +214,14 @@ find "$(dirname "$root")" -maxdepth 3 -type d -path '*/skill-observations/observ
     fm && /^---[[:space:]]*$/ {fm=0; print "---"; nextfile}
     fm
     END {if (fm) print "---"}' [0-9]*.md; } )
+) > "$tmp"
+st=$?
+cat "$tmp"
+if [ "$st" -eq 0 ]; then
+  { printf 'v2 %s %s\n' "$(date +%F)" "$n_all"
+    [ -s "$mTmp" ] && cat "$mTmp" || printf 'meta 0 0 absent\n'
+    printf '\n'
+    cat "$tmp"; } > "$cache.tmp" 2>/dev/null && mv -f "$cache.tmp" "$cache"
+fi
+rm -f "$tmp" "$mTmp"
+exit "$st"
